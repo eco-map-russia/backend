@@ -11,8 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
 
 @Service
 @RequiredArgsConstructor
@@ -20,23 +21,24 @@ public class ObservationPointServiceImpl implements ObservationPointService {
     private final ObservationPointRepository observationPointRepository;
     private final AirQualityDataRepository airQualityDataRepository;
     private final AirQualityMapper airQualityMapper;
+    private final Scheduler jdbcScheduler;
+    private final GeometryFactory geometryFactory;
+
 
     @Override
-    public ObservationPointResponseDto getLatestDataByCoordinates(Double lat, Double lon) {
-        Point point = createPoint(lon, lat);
-        ObservationPoint nearestPoint = observationPointRepository.findNearestPoint(point)
-                .orElseThrow(() -> new RuntimeException("Observation point not found"));
-        ObservationPointResponseDto dto = new ObservationPointResponseDto();
-        dto.setCoordinates(new CoordinatesResponseDto(lat, lon)); // Или nearestPoint?? что лучше
+    public Mono<ObservationPointResponseDto> getLatestDataByCoordinates(Double lat, Double lon) {
+        return Mono.fromCallable(() -> {
+            Point point = geometryFactory.createPoint(new Coordinate(lon, lat));
+            ObservationPoint nearestPoint = observationPointRepository.findNearestPoint(point)
+                    .orElseThrow(() -> new RuntimeException("Observation point not found"));
 
-        airQualityDataRepository.findLatestByObservationPoint(nearestPoint)
-                .ifPresent(data -> dto.setAirQualityData(airQualityMapper.entityToDto(data)));
+            ObservationPointResponseDto dto = new ObservationPointResponseDto();
 
-        return dto;
+            dto.setCoordinates(new CoordinatesResponseDto(lat, lon));
+            airQualityDataRepository.findLatestByObservationPoint(nearestPoint)
+                    .ifPresent(data -> dto.setAirQualityData(airQualityMapper.entityToDto(data)));
+            return dto;
+        }).subscribeOn(jdbcScheduler);
     }
 
-    private Point createPoint(double lon, double lat) {
-        GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), 4326);
-        return geometryFactory.createPoint(new Coordinate(lon, lat));
-    }
 }

@@ -11,7 +11,6 @@ import java.util.UUID;
 
 public interface AirQualityDataRepository extends JpaRepository<AirQualityData, UUID> {
 
-
     @Query("SELECT a FROM AirQualityData a WHERE a.observationPoint = :point ORDER BY a.time DESC LIMIT 1")
     Optional<AirQualityData> findLatestByObservationPoint(@Param("point") ObservationPoint point);
 }

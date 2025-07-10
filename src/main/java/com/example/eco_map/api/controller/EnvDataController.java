@@ -11,8 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
-import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -23,16 +24,15 @@ public class EnvDataController {
     private final ObservationPointService observationPointService;
 
     @GetMapping(path = "/regions/{id}")
-    public ResponseEntity<List<RegionResponseDto>> getRegions(@PathVariable UUID id) {
-        ;
-        return ResponseEntity.ok(regionService.getAllRegions());
+    public Flux<RegionResponseDto> getRegions(@PathVariable UUID id) {
+        return regionService.getAllRegions();
     }
 
     @GetMapping("/data")
-    public ResponseEntity<ObservationPointResponseDto> getNearestData(
+    public Mono<ResponseEntity<ObservationPointResponseDto>> getNearestData(
             @RequestParam double lat,
             @RequestParam double lon) {
-        ObservationPointResponseDto dto = observationPointService.getLatestDataByCoordinates(lat, lon);
-        return ResponseEntity.ok(dto);
+        return observationPointService.getLatestDataByCoordinates(lat, lon)
+                .map(ResponseEntity::ok);
     }
 }

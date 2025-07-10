@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+
+    <changeSet id="create-table-regions" author="i.shinova">
+        <createTable tableName="regions">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="geometry(MultiPolygon, 4326)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-table-cities" author="i.shinova">
+        <createTable tableName="cities">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="varchar(128)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="geom" type="geometry(Polygon, 4326)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-cities-region" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="cities"
+                baseColumnNames="region_id"
+                constraintName="fk_city_region"
+                referencedTableName="regions"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="create-table-observation-points" author="i.shinova">
+        <createTable tableName="observation_points">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="city_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="coordinates" type="geometry(Point, 4326)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-observation-city" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="observation_points"
+                baseColumnNames="city_id"
+                constraintName="fk_observation_city"
+                referencedTableName="cities"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="create-table-air-quality-data" author="i.shinova">
+        <createTable tableName="air_quality_data">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="observation_point_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="pm10" type="float8"/>
+            <column name="pm25" type="float8"/>
+            <column name="time" type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-air-quality-observation" author="">
+        <addForeignKeyConstraint
+                baseTableName="air_quality_data" baseColumnNames="observation_point_id"
+                constraintName="fk_air_quality_observation"
+                referencedTableName="observation_points"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="create-table-radiation-data" author="i.shinova">
+        <createTable tableName="radiation_data">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="observation_point_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="radiation_level" type="float8"/>
+            <column name="time" type="timestamp"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-air-radiation-observation" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="radiation_data"
+                baseColumnNames="observation_point_id"
+                constraintName="fk_radiation_observation"
+                referencedTableName="observation_points"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

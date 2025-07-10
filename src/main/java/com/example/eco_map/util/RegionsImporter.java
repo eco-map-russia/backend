@@ -1,5 +1,6 @@
 package com.example.eco_map.util;
 
+import com.example.eco_map.config.properties.PathProperties;
 import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,8 +11,8 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,30 +26,18 @@ import java.util.Optional;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RegionsImporter implements CommandLineRunner {
+
+public class RegionsImporter {
 
     private final RegionRepository regionRepository;
     private final ObjectMapper objectMapper;
-    private final GeoJsonReader geoJsonReader = new GeoJsonReader();
-    private final AssignationRegions assignationRegions;
+    private final GeoJsonReader geoJsonReader;
+    private final PathProperties pathProperties;
 
-    @Override
-    public void run(String... args) {
+    @Transactional
+    public void importRegions() throws IOException, ParseException {
 
-        try {
-            List<Region> regions = parseRegionsFromGeoJson();
-            regionRepository.saveAll(regions);
-            log.info("Successfully loaded {} regions", regions.size());
-            assignationRegions.assignRegionsToPoints();
-        } catch (Exception e) {
-            log.error("Error while importing regions", e);
-        }
-
-
-    }
-
-    private List<Region> parseRegionsFromGeoJson() throws IOException, ParseException {
-        File file = new File("src/main/resources/russia_regions.geojson");
+        File file = new File(pathProperties.getRegionsFile());
         String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
 
         JsonNode root = objectMapper.readTree(content);
@@ -69,7 +58,9 @@ public class RegionsImporter implements CommandLineRunner {
 
             regions.add(region);
         }
-        return regions;
+        regionRepository.saveAll(regions);
+
     }
+
 
 }

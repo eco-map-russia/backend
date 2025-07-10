@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface ObservationPointRepository extends JpaRepository<ObservationPoint, UUID> {
+
     Page<ObservationPoint> findAll(Pageable pageable);
 
     @Query(value = "SELECT * FROM observation_points op ORDER BY ST_Distance(op.coordinates, :point) LIMIT 1", nativeQuery = true)

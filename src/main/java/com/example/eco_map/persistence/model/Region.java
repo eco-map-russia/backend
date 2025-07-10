@@ -9,11 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.MultiPolygon;
 
 import java.util.ArrayList;
@@ -26,17 +26,44 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@EqualsAndHashCode(exclude = "points")
-@ToString(exclude = "points")
+@ToString(exclude = "cities")
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
     @Column(name = "name")
     private String name;
-    @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)")
+    @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)", nullable = false)
     private MultiPolygon geom;
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<ObservationPoint> points = new ArrayList<>();
+    private List<City> cities = new ArrayList<>();
 
+    @Override
+    public final boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null) return false;
+
+        Class<?> oEffectiveClass = o instanceof HibernateProxy
+                ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass()
+                : o.getClass();
+
+        Class<?> thisEffectiveClass = this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass()
+                : getClass();
+
+        if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
+
+        Region that = (Region) o;
+
+        return getId() != null && getId().equals(that.getId());
+    }
+
+    @Override
+    public final int hashCode() {
+        return this instanceof HibernateProxy
+                ? ((HibernateProxy) this).getHibernateLazyInitializer()
+                .getPersistentClass()
+                .hashCode()
+                : getClass().hashCode();
+    }
 }
