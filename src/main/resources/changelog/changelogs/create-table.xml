@@ -9,10 +9,13 @@
             <column name="id" type="uuid">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(128)">
+            <column name="name" type="text">
                 <constraints nullable="false"/>
             </column>
             <column name="geom" type="geometry(MultiPolygon, 4326)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -22,13 +25,16 @@
             <column name="id" type="uuid">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="name" type="varchar(128)">
+            <column name="name" type="text">
                 <constraints nullable="false"/>
             </column>
             <column name="region_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
             <column name="geom" type="geometry(Polygon, 4326)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
             </column>
         </createTable>
@@ -52,6 +58,9 @@
             <column name="coordinates" type="geometry(Point, 4326)">
                 <constraints nullable="false"/>
             </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet id="add-fk-observation-city" author="i.shinova">
@@ -73,9 +82,12 @@
             <column name="pm10" type="float8"/>
             <column name="pm25" type="float8"/>
             <column name="time" type="timestamp"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
-    <changeSet id="add-fk-air-quality-observation" author="">
+    <changeSet id="add-fk-air-quality-observation" author="i.shinova">
         <addForeignKeyConstraint
                 baseTableName="air_quality_data" baseColumnNames="observation_point_id"
                 constraintName="fk_air_quality_observation"
@@ -92,6 +104,9 @@
             </column>
             <column name="radiation_level" type="float8"/>
             <column name="time" type="timestamp"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
     <changeSet id="add-fk-air-radiation-observation" author="i.shinova">
@@ -102,5 +117,70 @@
                 referencedTableName="observation_points"
                 referencedColumnNames="id"/>
     </changeSet>
-
+    <changeSet id="create-table-users" author="i.shinova">
+        <createTable tableName="users">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="email" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="text"/>
+            <column name="last_name" type="text"/>
+            <column name="password_hash" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="phone" type="text"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-table-roles" author="i.shinova">
+        <createTable tableName="roles">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="create-table-user-roles" author="i.shinova">
+        <createTable tableName="user_roles">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="role_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-user-roles-users" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="user_roles"
+                baseColumnNames="user_id"
+                constraintName="fk_user_roles_user"
+                referencedTableName="users"
+                onDelete="CASCADE"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="add-fk-user-roles-roles" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="user_roles"
+                baseColumnNames="role_id"
+                constraintName="fk_user_roles_role"
+                referencedTableName="roles"
+                referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

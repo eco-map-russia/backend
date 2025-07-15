@@ -15,7 +15,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -30,11 +32,15 @@ import java.util.UUID;
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(name = "name")
     private String name;
     @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)", nullable = false)
     private MultiPolygon geom;
+    @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<City> cities = new ArrayList<>();
 

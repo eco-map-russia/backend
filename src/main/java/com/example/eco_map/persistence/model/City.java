@@ -18,7 +18,9 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.Polygon;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -33,6 +35,7 @@ import java.util.UUID;
 public class City {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
+    @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
     @Column(name = "name", nullable = false)
     private String name;
@@ -43,6 +46,9 @@ public class City {
     private Polygon geom;
     @OneToMany(mappedBy = "city", cascade = CascadeType.ALL)
     private List<ObservationPoint> points = new ArrayList<>();
+    @CreatedDate
+    @Column(name = "created_at", updatable = false, nullable = false)
+    private LocalDateTime createdAt;
 
     @Override
     public final boolean equals(Object o) {

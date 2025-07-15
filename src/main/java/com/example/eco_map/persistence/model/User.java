@@ -3,12 +3,9 @@ package com.example.eco_map.persistence.model;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -17,39 +14,40 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@AllArgsConstructor
+@Table(name = "users")
 @NoArgsConstructor
-@ToString(exclude = {"airQualityData", "radiationData"})
+@AllArgsConstructor
 @Getter
 @Setter
-@Table(name = "observation_points")
-public class ObservationPoint {
+@ToString(exclude = "userRoles")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "city_id")
-    private City city;
-    @Column(name = "coordinates", columnDefinition = "geometry(Point, 4326)", nullable = false)
-    private Point coordinates;
+    @Column(name = "email", nullable = false)
+    private String email;
+    @Column(name = "first_name")
+    private String firstName;
+    @Column(name = "last_name")
+    private String lastName;
+    @Column(name = "password_hash", nullable = false)
+    private String password;
+    @Column(name = "phone")
+    private String phone;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "observationPoint", cascade = CascadeType.ALL)
-    private List<AirQualityData> airQualityData = new ArrayList<>();
-    @OneToMany(mappedBy = "observationPoint", cascade = CascadeType.ALL)
-    private List<RadiationData> radiationData = new ArrayList<>();
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<UserRole> userRoles = new HashSet<>();
 
     @Override
     public final boolean equals(Object o) {
@@ -66,7 +64,7 @@ public class ObservationPoint {
 
         if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
 
-        ObservationPoint that = (ObservationPoint) o;
+        User that = (User) o;
 
         return getId() != null && getId().equals(that.getId());
     }

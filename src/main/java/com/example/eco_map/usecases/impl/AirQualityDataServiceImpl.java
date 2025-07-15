@@ -17,7 +17,6 @@ public class AirQualityDataServiceImpl implements AirQualityDataService {
 
     private final AirQualityDataRepository airQualityDataRepository;
 
-
     @Transactional
     public List<AirQualityData> saveAllAirQualityData(List<AirQualityData> dataList) {
         return airQualityDataRepository.saveAll(dataList);

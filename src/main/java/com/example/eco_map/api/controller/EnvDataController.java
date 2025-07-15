@@ -23,8 +23,8 @@ public class EnvDataController {
     private final RegionService regionService;
     private final ObservationPointService observationPointService;
 
-    @GetMapping(path = "/regions/{id}")
-    public Flux<RegionResponseDto> getRegions(@PathVariable UUID id) {
+    @GetMapping(path = "/regions")
+    public Flux<RegionResponseDto> getRegions() {
         return regionService.getAllRegions();
     }
 

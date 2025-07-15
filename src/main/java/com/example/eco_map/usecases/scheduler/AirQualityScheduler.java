@@ -78,6 +78,6 @@ public class AirQualityScheduler {
                             .subscribeOn(jdbcScheduler);
                 })
                 .doOnError(e -> log.error("Failed to save air quality batch", e))
-                .subscribe();
+                .block();
     }
 }

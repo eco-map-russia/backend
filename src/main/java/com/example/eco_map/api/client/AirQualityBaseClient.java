@@ -2,7 +2,6 @@ package com.example.eco_map.api.client;
 
 import com.example.eco_map.config.properties.AirQualityProperties;
 import com.example.eco_map.usecases.dto.AirQualityDto;
-import com.example.eco_map.usecases.dto.AirQualityHistoricalResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -31,9 +30,4 @@ public class AirQualityBaseClient extends BaseApiClient {
         return get(uri, AirQualityDto.class);
     }
 
-    public Mono<AirQualityHistoricalResponseDto> getHistoricalAirQuality(double lat, double lon, String startDate, String endDate) {
-        String uri = String.format(properties.getTemplates().getHistorical(), lat, lon, startDate, endDate);
-        log.debug("Calling historical air quality API: {}", uri);
-        return get(uri, AirQualityHistoricalResponseDto.class);
-    }
 }
