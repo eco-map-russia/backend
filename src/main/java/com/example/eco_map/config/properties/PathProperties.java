@@ -13,5 +13,7 @@ public class PathProperties {
     private String citiesFile;
     private String regionsFile;
     private String pointsFile;
-
+    private String waterDataFile;
+    private String landDegradationIndexFile;
+    private String soilPollutionDataFile;
 }

@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
@@ -50,9 +51,13 @@ public class CityImporter {
 
             Polygon polygon = (Polygon) geoJsonReader.read(feature.get("geometry").toString());
 
+            Point center = polygon.getCentroid();
+            center.setSRID(4326);
+
             City city = new City();
             city.setName(cityName);
             city.setRegion(region);
+            city.setCenter(center);
             city.setGeom(polygon);
             cities.add(city);
         }

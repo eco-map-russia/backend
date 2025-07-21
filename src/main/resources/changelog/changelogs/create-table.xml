@@ -12,6 +12,9 @@
             <column name="name" type="text">
                 <constraints nullable="false"/>
             </column>
+            <column name="center" type="geometry(Point, 4326)">
+                <constraints nullable="false"/>
+            </column>
             <column name="geom" type="geometry(MultiPolygon, 4326)">
                 <constraints nullable="false"/>
             </column>
@@ -29,6 +32,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="center" type="geometry(Point, 4326)">
                 <constraints nullable="false"/>
             </column>
             <column name="geom" type="geometry(Polygon, 4326)">
@@ -81,6 +87,15 @@
             </column>
             <column name="pm10" type="float8"/>
             <column name="pm25" type="float8"/>
+            <column name="carbon_monoxide" type="float8"/>
+            <column name="carbon_dioxide" type="float8"/>
+            <column name="nitrogen_dioxide" type="float8"/>
+            <column name="sulphur_dioxide" type="float8"/>
+            <column name="ozone" type="float8"/>
+            <column name="aerosol_optical_depth" type="float8"/>
+            <column name="dust" type="float8"/>
+            <column name="methane" type="float8"/>
+            <column name="european_aqi" type="float8"/>
             <column name="time" type="timestamp"/>
             <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
@@ -181,6 +196,52 @@
                 baseColumnNames="role_id"
                 constraintName="fk_user_roles_role"
                 referencedTableName="roles"
+                referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="create-table-soil-data" author="i.shinova">
+        <createTable tableName="soil_data">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="chronic_soil_pollution_percent" type="float8"/>
+            <column name="land_degradation_neutrality_index" type="float8"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-soil-data-region" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="soil_data"
+                baseColumnNames="region_id"
+                constraintName="fk_soil_data_region"
+                referencedTableName="regions"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="create-table-water-data" author="i.shinova">
+        <createTable tableName="water_data">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="dirty_surface_water_percent" type="float8"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-water-data-region" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="water_data"
+                baseColumnNames="region_id"
+                constraintName="fk_water_data_region"
+                referencedTableName="regions"
                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

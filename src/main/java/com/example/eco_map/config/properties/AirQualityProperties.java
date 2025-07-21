@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Component
@@ -13,12 +15,5 @@ import org.springframework.stereotype.Component;
 public class AirQualityProperties {
     private Integer batchSize;
     private String baseUrl;
-    private Templates templates;
-
-    @Getter
-    @Setter
-    public static class Templates {
-        private String current;
-        private String historical;
-    }
+    private List<String> currentParameters;
 }

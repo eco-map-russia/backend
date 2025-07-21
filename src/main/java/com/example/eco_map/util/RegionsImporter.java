@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
 import org.springframework.stereotype.Component;
@@ -52,9 +53,13 @@ public class RegionsImporter {
             JsonNode geometryNode = feature.get("geometry");
             String geomJson = geometryNode.toString();
             Geometry geom = geoJsonReader.read(geomJson);
+            MultiPolygon multiPolygon = (MultiPolygon) geom;
+            Point center = multiPolygon.getCentroid();
+            center.setSRID(4326);
             Region region = new Region();
             region.setName(regionName);
-            region.setGeom((MultiPolygon) geom);
+            region.setGeom(multiPolygon);
+            region.setCenter(center);
 
             regions.add(region);
         }

@@ -12,7 +12,10 @@ public class DataInitializer implements CommandLineRunner {
 
     private final RegionsImporter regionsImporter;
     private final CityImporter cityImporter;
-    private final AssignationService assignationService;
+    private final WaterDataImporter waterDataImporter;
+    private final PollutionSoilDataImporter pollutionSoilDataImporter;
+    private final LandDegradationBalanceIndexImporter landDegradationBalanceIndexImporter;
+    private final ObservationPointImporter observationPointImporter;
 
     @Override
     public void run(String... args) {
@@ -25,8 +28,16 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Importing cities...");
             cityImporter.importCities();
 
-            log.info("Assigning regions/cities to observation points...");
-            assignationService.assignCitiesToPoints();
+            log.info("Importing points...");
+            observationPointImporter.importObservationPoint();
+
+            log.info("Importing water data...");
+            waterDataImporter.importWaterData();
+
+            log.info("Importing soil data...");
+            pollutionSoilDataImporter.importPollutionSoilData();
+            landDegradationBalanceIndexImporter.importDegradationBalanceIndex();
+
 
         } catch (Exception e) {
             log.error("Failed during initialization", e);

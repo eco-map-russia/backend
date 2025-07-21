@@ -3,7 +3,6 @@ package com.example.eco_map.util;
 import com.example.eco_map.persistence.model.City;
 import com.example.eco_map.persistence.model.ObservationPoint;
 import com.example.eco_map.persistence.repository.CityRepository;
-import com.example.eco_map.persistence.repository.ObservationPointRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Point;
@@ -16,14 +15,11 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 public class AssignationService {
-    private final ObservationPointRepository pointRepository;
     private final CityRepository cityRepository;
-    private final JsonObservationPointImporter observationPointImporter;
 
 
-    @Transactional
-    public void assignCitiesToPoints() throws Exception {
-        List<ObservationPoint> points = observationPointImporter.importObservationPoints();
+    @Transactional(readOnly = true)
+    public List<ObservationPoint> assignCitiesToPoints(List<ObservationPoint> points) {
 
         for (ObservationPoint observationPoint : points) {
             Point point = observationPoint.getCoordinates();
@@ -39,6 +35,6 @@ public class AssignationService {
             }
         }
 
-        pointRepository.saveAll(points);
+        return points;
     }
 }
