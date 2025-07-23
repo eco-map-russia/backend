@@ -15,6 +15,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -28,7 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "cities")
+@ToString(exclude = {"cities", "soilData", "waterData"})
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,6 +37,8 @@ public class Region {
     private UUID id;
     @Column(name = "name")
     private String name;
+    @Column(name = "center", columnDefinition = "geometry(Point, 4326)", nullable = false)
+    private Point center;
     @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)", nullable = false)
     private MultiPolygon geom;
     @CreatedDate
@@ -43,6 +46,10 @@ public class Region {
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<City> cities = new ArrayList<>();
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    private List<SoilData> soilData = new ArrayList<>();
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    private List<WaterData> waterData = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

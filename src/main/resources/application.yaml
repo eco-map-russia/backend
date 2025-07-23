@@ -4,13 +4,25 @@ air:
   quality:
     batch-size: 3
     base-url: "http://air-quality-api.open-meteo.com/v1/air-quality"
-    templates:
-      current: "?latitude=%s&longitude=%s&current=pm10,pm2_5"
-      historical: "?latitude=%s&longitude=%s&hourly=pm10,pm2_5&start_date=%s&end_date=%s&timezone=auto"
+    current-parameters:
+      - european_aqi
+      - pm10
+      - pm2_5
+      - carbon_monoxide
+      - carbon_dioxide
+      - nitrogen_dioxide
+      - sulphur_dioxide
+      - ozone
+      - aerosol_optical_depth
+      - dust
+      - methane
 import:
   cities-file: src/main/resources/russia_cities.geojson
   regions-file: src/main/resources/russia_regions.geojson
   points-file: src/main/resources/city.csv
+  water-data-file: src/main/resources/water_data.csv
+  land-degradation-index-file: src/main/resources/land_degradation_index.csv
+  soil-pollution-data-file: src/main/resources/soil_pollution_data.csv
 spring:
   application:
     name: eco-map

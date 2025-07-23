@@ -31,7 +31,7 @@ public class AirQualityScheduler {
     private int currentOffset = 0;
     private int totalPoints = -1;
 
-    @Scheduled(fixedRate = 600000, initialDelay = 120000)
+    @Scheduled(fixedRate = 60000, initialDelay = 12000)
     public void fetchAndSaveAirQuality() {
         int batchSize = airQualityProperties.getBatchSize();
 

@@ -8,7 +8,6 @@ import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -56,6 +55,13 @@ public class GlobalExceptionHandler {
             errors.put(violation.getPropertyPath().toString(), violation.getMessage());
         }
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
+        log.warn("Caught IllegalArgumentException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

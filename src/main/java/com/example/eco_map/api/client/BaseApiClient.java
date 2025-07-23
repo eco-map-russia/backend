@@ -11,9 +11,8 @@ public abstract class BaseApiClient {
     protected final String baseUrl;
 
     protected <T> Mono<T> get(String formattedPath, Class<T> responseType) {
-        String fullUrl = baseUrl + formattedPath;
         return webClient.get()
-                .uri(fullUrl)
+                .uri(formattedPath)
                 .retrieve()
                 .bodyToMono(responseType);
     }
