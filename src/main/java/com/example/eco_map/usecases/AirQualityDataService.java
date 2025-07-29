@@ -2,8 +2,10 @@ package com.example.eco_map.usecases;
 
 import com.example.eco_map.persistence.model.AirQualityData;
 import com.example.eco_map.persistence.model.ObservationPoint;
+import com.example.eco_map.usecases.dto.AirMapDto;
 import com.example.eco_map.usecases.dto.AirQualityHistoricalResponseDto;
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -16,4 +18,8 @@ public interface AirQualityDataService {
             LocalDate startDate,
             LocalDate endDate
     );
+
+    Mono<AirQualityData> getLatestByCoordinates(ObservationPoint point);
+
+    Flux<AirMapDto> getAllAirDataForMap();
 }

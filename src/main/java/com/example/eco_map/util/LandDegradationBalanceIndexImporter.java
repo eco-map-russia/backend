@@ -28,10 +28,18 @@ public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<Soi
     private final PathProperties pathProperties;
     private Map<String, Region> regionMap;
 
+    private Map<String, SoilData> soilDataMap;
+
+
     public void importDegradationBalanceIndex() {
         this.regionMap = regionRepository.findAll().stream()
                 .collect(Collectors.toMap(r -> r.getName().toLowerCase(), Function.identity()));
-
+        this.soilDataMap = soilDataRepository.findAllWithRegion().stream()
+                .collect(Collectors.toMap(
+                        data -> data.getRegion().getName().toLowerCase(),
+                        Function.identity()
+                ));
+        log.info("soilDataMap.toString()" + soilDataMap.toString());
         importLines(this::parseLine, pathProperties.getLandDegradationIndexFile());
     }
 
@@ -50,10 +58,13 @@ public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<Soi
         } else {
             value = Double.parseDouble(line[VALUE_INDEX].replace(",", "."));
         }
-        SoilData data = new SoilData();
-        data.setRegion(region);
+        SoilData data = soilDataMap.get(regionName);
+        if (data == null) {
+            data = new SoilData();
+            data.setRegion(region);
+            soilDataMap.put(regionName, data);
+        }
         data.setLandDegradationNeutralityIndex(value);
-
         return data;
     }
 

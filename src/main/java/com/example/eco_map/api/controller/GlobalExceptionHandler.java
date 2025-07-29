@@ -64,6 +64,13 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Mono<ErrorResponse> handleUnexpectedException(RuntimeException ex) {
+        log.error("Unhandled RuntimeException", ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error occurred");
+    }
+
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
         return Mono.just(new ErrorResponse(
                 status.value(),

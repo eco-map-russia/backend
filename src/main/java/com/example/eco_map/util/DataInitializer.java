@@ -16,6 +16,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PollutionSoilDataImporter pollutionSoilDataImporter;
     private final LandDegradationBalanceIndexImporter landDegradationBalanceIndexImporter;
     private final ObservationPointImporter observationPointImporter;
+    private final RadiationDataImporter radiationDataImporter;
 
     @Override
     public void run(String... args) {
@@ -38,6 +39,8 @@ public class DataInitializer implements CommandLineRunner {
             pollutionSoilDataImporter.importPollutionSoilData();
             landDegradationBalanceIndexImporter.importDegradationBalanceIndex();
 
+            log.info("Importing radiation data...");
+            radiationDataImporter.importRadiationData();
 
         } catch (Exception e) {
             log.error("Failed during initialization", e);

@@ -31,10 +31,8 @@ public class RadiationData {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "observation_point_id")
     private ObservationPoint observationPoint;
-    @Column(name = "radiation_level")
-    private Double radiationLevel;
-    @Column(name = "time")
-    private LocalDateTime time;
+    @Column(name = "beta_fallout", nullable = false)
+    private Double betaFallout;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;

@@ -23,6 +23,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @NamedNativeQuery(
@@ -117,7 +118,7 @@ public class AirQualityData {
     @Column(name = "european_aqi")
     private Double europeanAqi;
     @Column(name = "time")
-    private LocalDateTime time;
+    private OffsetDateTime time;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
