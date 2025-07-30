@@ -5,5 +5,5 @@ import reactor.core.publisher.Flux;
 public interface MapLayerStrategy {
     MapLayerType getType();
 
-    Flux<?> getMapData();
+    Flux<Object> getMapData();
 }

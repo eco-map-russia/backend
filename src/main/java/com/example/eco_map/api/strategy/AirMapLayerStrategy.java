@@ -16,7 +16,7 @@ public class AirMapLayerStrategy implements MapLayerStrategy {
     }
 
     @Override
-    public Flux<?> getMapData() {
-        return airQualityDataService.getAllAirDataForMap();
+    public Flux<Object> getMapData() {
+        return airQualityDataService.getAllAirDataForMap().cast(Object.class);
     }
 }

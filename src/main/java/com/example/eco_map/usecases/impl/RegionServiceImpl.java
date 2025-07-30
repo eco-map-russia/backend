@@ -1,5 +1,6 @@
 package com.example.eco_map.usecases.impl;
 
+import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.usecases.RegionDetailsAggregator;
 import com.example.eco_map.usecases.RegionService;
@@ -37,7 +38,7 @@ public class RegionServiceImpl implements RegionService {
         return Mono.fromCallable(() -> regionRepository.findById(id))
                 .flatMap(optionalRegion -> optionalRegion
                         .map(regionDetailsAggregator::buildDetails)
-                        .orElse(Mono.empty()))
+                        .orElseGet(() -> Mono.error(new RegionNotFoundException("Region not found"))))
                 .subscribeOn(jdbcScheduler);
     }
 }

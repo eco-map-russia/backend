@@ -17,6 +17,9 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Flux<LocationSearchDto> searchCityOrRegionByName(String query) {
+        if (query == null || query.trim().isEmpty()) {
+            return Flux.empty();
+        }
         return Mono.fromCallable(() ->
                         searchRepository.searchByName(query))
                 .subscribeOn(jdbcScheduler)

@@ -3,8 +3,15 @@ package com.example.eco_map.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+@ConditionalOnProperty(
+        prefix = "app.data-init",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 @Component
 @RequiredArgsConstructor
 @Slf4j

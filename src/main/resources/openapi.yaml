@@ -102,6 +102,8 @@ paths:
                 $ref: '#/components/schemas/RegionDetailsDto'
         '404':
           $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -137,6 +139,8 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalError'
 
@@ -170,6 +174,8 @@ paths:
                 $ref: '#/components/schemas/RadiationDataObservationDto'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
         '500':
@@ -189,7 +195,6 @@ paths:
           required: true
           schema:
             type: string
-            format: double
       responses:
         '200':
           description: Результаты поиска по координатам
@@ -201,6 +206,8 @@ paths:
                   $ref: '#/components/schemas/LocationSearchDto'
         '500':
           $ref: '#/components/responses/InternalError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
   /map/layer/{type}:
     get:
@@ -216,7 +223,6 @@ paths:
           required: true
           schema:
             type: string
-            enum: [ air, radiation, soil, water ]
       responses:
         '200':
           description: Данные выбранного слоя карты
@@ -225,13 +231,13 @@ paths:
               schema:
                 type: array
                 items:
-                  oneOf:
-                    - $ref: '#/components/schemas/AirMapDto'
-                    - $ref: '#/components/schemas/RadiationMapDto'
-                    - $ref: '#/components/schemas/SoilMapDto'
-                    - $ref: '#/components/schemas/WaterMapDto'
+                  type: object
         '500':
           $ref: '#/components/responses/InternalError'
+        '400':
+          $ref: '#/components/responses/IllegalArgumentException'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
 components:
   securitySchemes:
@@ -536,31 +542,37 @@ components:
 
   responses:
     BadRequest:
-      description: Неверный запрос (валидация, некорректные параметры)
+      description: Неверный запрос
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     Unauthorized:
-      description: Ошибка авторизации (неверные креденшелы или токен)
+      description: Ошибка авторизации
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     Conflict:
-      description: Конфликт данных (например, пользователь уже существует)
+      description: Конфликт данных
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     NotFound:
-      description: Ресурс не найден (точка наблюдения, регион и т.д.)
+      description: Ресурс не найден
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/ErrorResponse'
     InternalError:
       description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    IllegalArgumentException:
+      description: Недопустимый аргумент
       content:
         application/json:
           schema:

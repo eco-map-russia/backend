@@ -16,7 +16,7 @@ public class RadiationMapLayerStrategy implements MapLayerStrategy {
     }
 
     @Override
-    public Flux<?> getMapData() {
-        return radiationDataService.getAllRadiationDataForMap();
+    public Flux<Object> getMapData() {
+        return radiationDataService.getAllRadiationDataForMap().cast(Object.class);
     }
 }

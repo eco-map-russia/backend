@@ -16,7 +16,7 @@ public class SoilMapLayerStrategy implements MapLayerStrategy {
     }
 
     @Override
-    public Flux<?> getMapData() {
-        return soilDataService.getAllSoilDataForMap();
+    public Flux<Object> getMapData() {
+        return soilDataService.getAllSoilDataForMap().cast(Object.class);
     }
 }

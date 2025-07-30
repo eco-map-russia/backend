@@ -16,7 +16,7 @@ public class WaterMapLayerStrategy implements MapLayerStrategy {
     }
 
     @Override
-    public Flux<?> getMapData() {
-        return waterDataService.getAllWaterDataForMap();
+    public Flux<Object> getMapData() {
+        return waterDataService.getAllWaterDataForMap().cast(Object.class);
     }
 }
