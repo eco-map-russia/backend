@@ -9,16 +9,28 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 public interface AirQualityDataRepository extends JpaRepository<AirQualityData, UUID> {
 
-    @Query("SELECT a FROM AirQualityData a WHERE a.observationPoint = :point ORDER BY a.time DESC LIMIT 1")
-    Optional<AirQualityData> findLatestByObservationPoint(@Param("point") ObservationPoint point);
+    AirQualityData findTopByObservationPointOrderByTimeDesc(ObservationPoint point);
 
     @Query(name = "AirQualityData.findHistoricalData", nativeQuery = true)
     List<AirQualityHistoricalResponseDto> findDailyAveragesAirQualityData(@Param("observationPointId") UUID observationPointId,
                                                                           @Param("start") LocalDate start,
                                                                           @Param("end") LocalDate end);
+
+
+    @Query("""
+                SELECT a FROM AirQualityData a
+                JOIN FETCH a.observationPoint op
+                WHERE a.time = (
+                    SELECT MAX(a2.time)
+                    FROM AirQualityData a2
+                    WHERE a2.observationPoint.id = op.id
+                )
+            """)
+    List<AirQualityData> findLatestAirDataWithPoint();
+
+
 }

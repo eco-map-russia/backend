@@ -18,8 +18,8 @@ public class SearchRepositoryImpl implements SearchRepository {
         String sql = """
                     SELECT * FROM (
                         SELECT id, name, 
-                               ST_Y(center::geometry) ,
-                               ST_X(center::geometry) 
+                               ST_Y(center::geometry) as lat,
+                               ST_X(center::geometry) as lon 
                         FROM regions
                         WHERE LOWER(name) LIKE :q
                         UNION ALL

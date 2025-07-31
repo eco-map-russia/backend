@@ -1,34 +1,49 @@
 package com.example.eco_map.api.controller;
 
+
+import com.example.eco_map.api.AuthApi;
 import com.example.eco_map.usecases.AuthenticationService;
 import com.example.eco_map.usecases.dto.AuthRequestDto;
 import com.example.eco_map.usecases.dto.AuthResponseDto;
 import com.example.eco_map.usecases.dto.RegistrationRequestDto;
 import com.example.eco_map.usecases.dto.RegistrationResponseDto;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/auth")
-public class AuthController {
+public class AuthController implements AuthApi {
+
     private final AuthenticationService authenticationService;
 
-    @PostMapping("/register")
-    public Mono<ResponseEntity<RegistrationResponseDto>> register(@RequestBody @Valid RegistrationRequestDto request) {
-        return authenticationService.registerUser(request)
-                .flatMap(registrationResponseDto -> Mono.just(ResponseEntity.ok(registrationResponseDto)));
+    @PostMapping("/login")
+    @Override
+    public Mono<ResponseEntity<AuthResponseDto>> loginUser(
+            @RequestBody Mono<AuthRequestDto> authRequestDtoMono,
+            ServerWebExchange exchange) {
+
+        return authRequestDtoMono
+                .flatMap(authenticationService::authenticate)
+                .map(authenticationService::generateToken)
+                .map(ResponseEntity::ok);
     }
 
-    @PostMapping("/login")
-    public Mono<AuthResponseDto> login(@RequestBody @Valid AuthRequestDto authRequest) {
-        return authenticationService.authenticate(authRequest)
-                .map(authenticationService::generateToken);
+    @PostMapping("/register")
+    @Override
+    public Mono<ResponseEntity<RegistrationResponseDto>> registerUser(
+            @RequestBody Mono<RegistrationRequestDto> registrationRequestDto,
+            ServerWebExchange exchange) {
+
+        return registrationRequestDto
+                .flatMap(authenticationService::registerUser)
+                .map(ResponseEntity::ok);
     }
 }
+

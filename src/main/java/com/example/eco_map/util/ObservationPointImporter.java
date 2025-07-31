@@ -19,6 +19,7 @@ import java.util.List;
 public class ObservationPointImporter extends AbstractCsvImporter<ObservationPoint> {
     private static final Integer LAT_INDEX = 20;
     private static final Integer LON_INDEX = 21;
+    private static final Integer OBSERVATION_POINT_NAME = 9;
     private final PathProperties pathProperties;
     private final GeometryFactory geometryFactory;
     private final AssignationService assignationService;
@@ -31,10 +32,11 @@ public class ObservationPointImporter extends AbstractCsvImporter<ObservationPoi
     private ObservationPoint parseLine(String[] line) {
         double lat = Double.parseDouble(line[LAT_INDEX]);
         double lon = Double.parseDouble(line[LON_INDEX]);
-
+        String name = line[OBSERVATION_POINT_NAME];
         Point coordinates = geometryFactory.createPoint(new Coordinate(lon, lat));
         ObservationPoint point = new ObservationPoint();
         point.setCoordinates(coordinates);
+        point.setName(name);
         return point;
     }
 

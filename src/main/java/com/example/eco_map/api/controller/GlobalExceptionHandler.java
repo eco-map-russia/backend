@@ -1,6 +1,9 @@
 package com.example.eco_map.api.controller;
 
+import com.example.eco_map.api.exception.AirQualityNotFoundException;
 import com.example.eco_map.api.exception.ErrorResponse;
+import com.example.eco_map.api.exception.RadiationNotFoundException;
+import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
 import jakarta.validation.ConstraintViolation;
@@ -11,6 +14,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Mono;
 
 import java.time.ZoneId;
@@ -46,22 +50,47 @@ public class GlobalExceptionHandler {
         return buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage());
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
+    @ExceptionHandler(WebExchangeBindException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Mono<ErrorResponse> handleValidationErrors(ConstraintViolationException ex) {
-        log.error("Caught ConstraintViolationException", ex);
+    public Mono<ErrorResponse> handleWebExchangeBindException(WebExchangeBindException ex) {
+        log.warn("Validation failed: {}", ex.getMessage());
         Map<String, String> errors = new HashMap<>();
-        for (ConstraintViolation<?> violation : ex.getConstraintViolations()) {
-            errors.put(violation.getPropertyPath().toString(), violation.getMessage());
-        }
+        ex.getFieldErrors().forEach(fieldError ->
+                errors.put(fieldError.getField(), fieldError.getDefaultMessage())
+        );
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
     }
-
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
         log.warn("Caught IllegalArgumentException: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    public Mono<ErrorResponse> handleUnexpectedException(RuntimeException ex) {
+        log.error("Unhandled RuntimeException", ex);
+        return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error occurred");
+    }
+    @ExceptionHandler(RegionNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleRegionNotFoundException(RegionNotFoundException ex) {
+        log.warn("Caught RegionNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+    @ExceptionHandler(AirQualityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleAirQualityNotFoundException(AirQualityNotFoundException ex) {
+        log.warn("Caught AirQualityNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(RadiationNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleRadiationNotFoundException(RadiationNotFoundException ex) {
+        log.warn("Caught RadiationNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

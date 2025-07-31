@@ -20,7 +20,6 @@ public abstract class AbstractCsvImporter<T> {
         List<T> lines = new ArrayList<>();
         CSVParser csvParser = new CSVParserBuilder()
                 .withSeparator(';')
-                .withSeparator(',')
                 .withQuoteChar('"')
                 .build();
         try (CSVReader reader = new CSVReaderBuilder(new FileReader(filePath))

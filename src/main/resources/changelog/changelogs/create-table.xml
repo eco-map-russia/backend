@@ -58,6 +58,7 @@
             <column name="id" type="uuid">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
+            <column name="name" type="text"/>
             <column name="city_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
@@ -117,8 +118,9 @@
             <column name="observation_point_id" type="uuid">
                 <constraints nullable="false"/>
             </column>
-            <column name="radiation_level" type="float8"/>
-            <column name="time" type="timestamp"/>
+            <column name="beta_fallout" type="float8">
+                <constraints nullable="false"/>
+            </column>
             <column name="created_at" type="timestamp">
                 <constraints nullable="false"/>
             </column>

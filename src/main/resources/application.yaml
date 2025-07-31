@@ -1,5 +1,8 @@
 server:
   port: 8080
+app:
+  data-init:
+    enabled: true
 air:
   quality:
     batch-size: 3
@@ -19,10 +22,11 @@ air:
 import:
   cities-file: src/main/resources/russia_cities.geojson
   regions-file: src/main/resources/russia_regions.geojson
-  points-file: src/main/resources/city.csv
+  points-file: src/main/resources/cities.csv
   water-data-file: src/main/resources/water_data.csv
   land-degradation-index-file: src/main/resources/land_degradation_index.csv
   soil-pollution-data-file: src/main/resources/soil_pollution_data.csv
+  radiation-data-file: src/main/resources/radiation.csv
 spring:
   application:
     name: eco-map
@@ -47,6 +51,5 @@ logging:
     org.springframework.transaction: DEBUG
     org.springframework.jdbc.datasource.DataSourceTransactionManager: DEBUG
     org.springframework.transaction.interceptor: TRACE
-
 JWT_SECRET: ${JWT_SECRET_KEY}
 JWT_EXPIRATION_TIME_MS: 900000

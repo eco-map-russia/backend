@@ -3,8 +3,15 @@ package com.example.eco_map.util;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
+@ConditionalOnProperty(
+        prefix = "app.data-init",
+        name = "enabled",
+        havingValue = "true",
+        matchIfMissing = true
+)
 @Component
 @RequiredArgsConstructor
 @Slf4j
@@ -16,6 +23,7 @@ public class DataInitializer implements CommandLineRunner {
     private final PollutionSoilDataImporter pollutionSoilDataImporter;
     private final LandDegradationBalanceIndexImporter landDegradationBalanceIndexImporter;
     private final ObservationPointImporter observationPointImporter;
+    private final RadiationDataImporter radiationDataImporter;
 
     @Override
     public void run(String... args) {
@@ -38,6 +46,8 @@ public class DataInitializer implements CommandLineRunner {
             pollutionSoilDataImporter.importPollutionSoilData();
             landDegradationBalanceIndexImporter.importDegradationBalanceIndex();
 
+            log.info("Importing radiation data...");
+            radiationDataImporter.importRadiationData();
 
         } catch (Exception e) {
             log.error("Failed during initialization", e);

@@ -20,8 +20,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class WaterDataImporter extends AbstractCsvImporter<WaterData> {
 
-    private static final Integer REGION_INDEX = 4;
-    private static final Integer VALUE_INDEX = 9;
+    private static final Integer REGION_INDEX = 9;
+    private static final Integer VALUE_INDEX = 8;
 
     private final WaterDataRepository waterDataRepository;
     private final RegionRepository regionRepository;

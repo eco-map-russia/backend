@@ -48,7 +48,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public Mono<RegistrationResponseDto> registerUser(RegistrationRequestDto requestDto) {
         return Mono.fromCallable(() -> transactionTemplate.execute(status -> {
-            Optional<User> existing = userRepository.findByEmail(requestDto.email());
+            Optional<User> existing = userRepository.findByEmail(requestDto.getEmail());
             if (existing.isPresent()) {
                 throw new UserAlreadyExistsException("User already exists");
             }
@@ -57,7 +57,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                     .orElseThrow(() -> new RoleNotFoundException("Default role not found"));
 
             User user = authMapper.toEntity(requestDto);
-            user.setPassword(passwordEncoder.encode(requestDto.password()));
+            user.setPassword(passwordEncoder.encode(requestDto.getPassword()));
 
             UserRole userRole = new UserRole();
             userRole.setUser(user);
@@ -74,7 +74,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     public Mono<UserDetails> authenticate(AuthRequestDto authRequest) {
 
         UsernamePasswordAuthenticationToken authToken =
-                new UsernamePasswordAuthenticationToken(authRequest.email(), authRequest.password());
+                new UsernamePasswordAuthenticationToken(authRequest.getEmail(), authRequest.getPassword());
         return authenticationManager.authenticate(authToken)
                 .filter(Authentication::isAuthenticated)
                 .switchIfEmpty(Mono.error(new BadCredentialsException("Invalid username or password")))
@@ -84,7 +84,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthResponseDto generateToken(UserDetails userDetails) {
         String token = jwtService.generateToken(userDetails.getUsername());
-        return new AuthResponseDto(token);
+        AuthResponseDto authResponseDto = new AuthResponseDto();
+        authResponseDto.setToken(token);
+        return authResponseDto;
     }
 
     @Override

@@ -16,4 +16,5 @@ public class PathProperties {
     private String waterDataFile;
     private String landDegradationIndexFile;
     private String soilPollutionDataFile;
+    private String radiationDataFile;
 }

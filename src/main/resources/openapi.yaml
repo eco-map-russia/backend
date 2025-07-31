@@ -1,0 +1,582 @@
+openapi: 3.1.0
+info:
+  title: Eco Map API
+  version: 1.0.0
+  description: API для Экологической карты РФ
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local Dev
+security:
+  - bearerAuth: [ ]
+paths:
+  /auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Регистрация пользователя
+      operationId: registerUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationRequestDto'
+      responses:
+        '200':
+          description: Успешная регистрация
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Авторизация пользователя
+      operationId: loginUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthRequestDto'
+      responses:
+        '200':
+          description: Токен авторизации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /regions:
+    get:
+      tags:
+        - EnvData
+      operationId: getAllRegions
+      security:
+        - bearerAuth: [ ]
+      summary: Список регионов
+      responses:
+        '200':
+          description: Успешно
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RegionResponseDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
+  /regions/{id}:
+    get:
+      tags:
+        - EnvData
+      summary: Детали региона
+      operationId: getRegionById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Детальная информация по региону
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegionDetailsDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /air-quality/current:
+    get:
+      tags:
+        - EnvData
+      operationId: getCurrentAirQuality
+      security:
+        - bearerAuth: [ ]
+      summary: Актуальные данные по качеству воздуха
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Актуальные данные по воздуху
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirQualityObservationDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /stations:
+    get:
+      tags:
+        - EnvData
+      security:
+        - bearerAuth: [ ]
+      summary: Радиоактивные данные
+      operationId: getRadiationData
+      parameters:
+        - name: lat
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+        - name: lon
+          in: query
+          required: true
+          schema:
+            type: number
+            format: double
+      responses:
+        '200':
+          description: Актуальные радиоактивные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RadiationDataObservationDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalError'
+
+  /search:
+    get:
+      tags:
+        - EnvData
+      summary: Поиск локации (город/регион)
+      security:
+        - bearerAuth: [ ]
+      operationId: searchLocation
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Результаты поиска по координатам
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LocationSearchDto'
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /map/layer/{type}:
+    get:
+      tags:
+        - EnvData
+      summary: Данные слоя карты
+      security:
+        - bearerAuth: [ ]
+      operationId: getMapLayerData
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Данные выбранного слоя карты
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '500':
+          $ref: '#/components/responses/InternalError'
+        '400':
+          $ref: '#/components/responses/IllegalArgumentException'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CoordinatesResponseDto:
+      type: object
+      properties:
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+
+    RegionResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        geoJson:
+          type: string
+
+    RegionDetailsDto:
+      type: object
+      properties:
+        regionId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        center:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        soilData:
+          $ref: '#/components/schemas/SoilRegionDetailsDto'
+        waterData:
+          $ref: '#/components/schemas/WaterRegionDetailsDto'
+
+    SoilRegionDetailsDto:
+      type: object
+      properties:
+        chronicSoilPollutionPercent:
+          type: number
+          format: double
+        landDegradationNeutralityIndex:
+          type: number
+          format: double
+
+    WaterRegionDetailsDto:
+      type: object
+      properties:
+        dirtySurfaceWaterPercent:
+          type: number
+          format: double
+
+    AirQualityObservationDto:
+      type: object
+      properties:
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        airQualityData:
+          $ref: '#/components/schemas/AirQualityResponseDto'
+
+    AirQualityResponseDto:
+      type: object
+      properties:
+        time:
+          type: string
+          format: date-time
+        pm10:
+          type: number
+        pm25:
+          type: number
+        carbonMonoxide:
+          type: number
+        carbonDioxide:
+          type: number
+        nitrogenDioxide:
+          type: number
+        sulphurDioxide:
+          type: number
+        ozone:
+          type: number
+        aerosolOpticalDepth:
+          type: number
+        dust:
+          type: number
+        methane:
+          type: number
+        europeanAqi:
+          type: number
+
+    AirQualityHistoricalObservationDto:
+      type: object
+      properties:
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        airQualityHistoricalResponseDto:
+          $ref: '#/components/schemas/AirQualityHistoricalResponseDto'
+
+    AirQualityHistoricalResponseDto:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        pm10:
+          type: number
+        pm25:
+          type: number
+        carbonMonoxide:
+          type: number
+        carbonDioxide:
+          type: number
+        nitrogenDioxide:
+          type: number
+        sulphurDioxide:
+          type: number
+        ozone:
+          type: number
+        aerosolOpticalDepth:
+          type: number
+        dust:
+          type: number
+        methane:
+          type: number
+        europeanAqi:
+          type: number
+
+    RadiationDataObservationDto:
+      type: object
+      properties:
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        radiationDataDto:
+          $ref: '#/components/schemas/RadiationDataDto'
+
+    RadiationDataDto:
+      type: object
+      properties:
+        betaFallout:
+          type: number
+
+    LocationSearchDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        lat:
+          type: number
+        lon:
+          type: number
+
+    AuthRequestDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+
+    AuthResponseDto:
+      type: object
+      properties:
+        token:
+          type: string
+
+    RegistrationRequestDto:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          minLength: 6
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+
+    RegistrationResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+
+    SoilMapDto:
+      type: object
+      properties:
+        regionId:
+          type: string
+          format: uuid
+        regionName:
+          type: string
+        chronicSoilPollutionPercent:
+          type: number
+        landDegradationNeutralityIndex:
+          type: number
+        geoJson:
+          type: string
+
+    WaterMapDto:
+      type: object
+      properties:
+        regionId:
+          type: string
+          format: uuid
+        regionName:
+          type: string
+        dirtySurfaceWaterPercent:
+          type: number
+        geoJson:
+          type: string
+
+    AirMapDto:
+      type: object
+      properties:
+        pointId:
+          type: string
+          format: uuid
+        pointName:
+          type: string
+        CoordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        pm25:
+          type: number
+        pm10:
+          type: number
+        carbonMonoxide:
+          type: number
+        carbonDioxide:
+          type: number
+        nitrogenDioxide:
+          type: number
+        sulphurDioxide:
+          type: number
+        ozone:
+          type: number
+        aerosolOpticalDepth:
+          type: number
+        dust:
+          type: number
+        methane:
+          type: number
+        europeanAqi:
+          type: number
+        time:
+          type: string
+          format: date-time
+
+    RadiationMapDto:
+      type: object
+      properties:
+        pointId:
+          type: string
+          format: uuid
+        pointName:
+          type: string
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        betaFallout:
+          type: number
+    ErrorResponse:
+      type: object
+      properties:
+        status:
+          type: integer
+        message:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: Ошибка авторизации
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Conflict:
+      description: Конфликт данных
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    InternalError:
+      description: Внутренняя ошибка сервера
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    IllegalArgumentException:
+      description: Недопустимый аргумент
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+
+
