@@ -2,7 +2,7 @@ server:
   port: 8080
 app:
   data-init:
-    enabled: false
+    enabled: true
 air:
   quality:
     batch-size: 3
@@ -22,7 +22,7 @@ air:
 import:
   cities-file: src/main/resources/russia_cities.geojson
   regions-file: src/main/resources/russia_regions.geojson
-  points-file: src/main/resources/city.csv
+  points-file: src/main/resources/cities.csv
   water-data-file: src/main/resources/water_data.csv
   land-degradation-index-file: src/main/resources/land_degradation_index.csv
   soil-pollution-data-file: src/main/resources/soil_pollution_data.csv
