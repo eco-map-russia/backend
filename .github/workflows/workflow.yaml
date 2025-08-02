@@ -17,7 +17,7 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Create .env file
-        uses: SpicyPizza/create-envfile@v2.0
+        uses: SpicyPizza/create-envfile@v2.0.3
         with:
           envkey_DATABASE_USERNAME: ${{ secrets.DATABASE_USERNAME }}
           envkey_DATABASE_PASSWORD: ${{ secrets.DATABASE_PASSWORD }}
@@ -32,6 +32,9 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build project
+        run: mvn clean package -DskipTests
+
       - name: Build and push docker image
         run: |
           docker compose build
