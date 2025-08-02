@@ -6,8 +6,11 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ClassPathResource;
 
-import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
@@ -22,9 +25,10 @@ public abstract class AbstractCsvImporter<T> {
                 .withSeparator(';')
                 .withQuoteChar('"')
                 .build();
-        try (CSVReader reader = new CSVReaderBuilder(new FileReader(filePath))
-                .withCSVParser(csvParser)
-                .build()) {
+
+        try (InputStream is = new ClassPathResource(filePath).getInputStream();
+             InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
+             CSVReader reader = new CSVReaderBuilder(isr).withCSVParser(csvParser).build()) {
             reader.readNext();
             String[] line;
 

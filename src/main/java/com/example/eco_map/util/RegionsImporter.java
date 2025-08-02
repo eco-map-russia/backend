@@ -12,13 +12,13 @@ import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -38,32 +38,34 @@ public class RegionsImporter {
     @Transactional
     public void importRegions() throws IOException, ParseException {
 
-        File file = new File(pathProperties.getRegionsFile());
-        String content = Files.readString(file.toPath(), StandardCharsets.UTF_8);
+        try (InputStream is = new ClassPathResource(pathProperties.getRegionsFile()).getInputStream()) {
+            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
+            JsonNode root = objectMapper.readTree(content);
+            JsonNode features = root.get("features");
+            List<Region> regions = new ArrayList<>();
 
-        JsonNode root = objectMapper.readTree(content);
-        JsonNode features = root.get("features");
-        List<Region> regions = new ArrayList<>();
+            for (JsonNode feature : features) {
+                String regionName = Optional.ofNullable(feature.get("properties"))
+                        .map(p -> p.get("region"))
+                        .map(JsonNode::asText)
+                        .orElseThrow(() -> new IllegalArgumentException("Failed to parse feature: " + feature));
+                JsonNode geometryNode = feature.get("geometry");
+                String geomJson = geometryNode.toString();
+                Geometry geom = geoJsonReader.read(geomJson);
+                MultiPolygon multiPolygon = (MultiPolygon) geom;
+                Point center = multiPolygon.getCentroid();
+                center.setSRID(4326);
+                Region region = new Region();
+                region.setName(regionName);
+                region.setGeom(multiPolygon);
+                region.setCenter(center);
 
-        for (JsonNode feature : features) {
-            String regionName = Optional.ofNullable(feature.get("properties"))
-                    .map(p -> p.get("region"))
-                    .map(JsonNode::asText)
-                    .orElseThrow(() -> new IllegalArgumentException("Failed to parse feature: " + feature));
-            JsonNode geometryNode = feature.get("geometry");
-            String geomJson = geometryNode.toString();
-            Geometry geom = geoJsonReader.read(geomJson);
-            MultiPolygon multiPolygon = (MultiPolygon) geom;
-            Point center = multiPolygon.getCentroid();
-            center.setSRID(4326);
-            Region region = new Region();
-            region.setName(regionName);
-            region.setGeom(multiPolygon);
-            region.setCenter(center);
+                regions.add(region);
+            }
+            regionRepository.saveAll(regions);
 
-            regions.add(region);
         }
-        regionRepository.saveAll(regions);
+
 
     }
 

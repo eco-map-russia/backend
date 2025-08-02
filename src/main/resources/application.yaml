@@ -20,13 +20,13 @@ air:
       - dust
       - methane
 import:
-  cities-file: src/main/resources/russia_cities.geojson
-  regions-file: src/main/resources/russia_regions.geojson
-  points-file: src/main/resources/cities.csv
-  water-data-file: src/main/resources/water_data.csv
-  land-degradation-index-file: src/main/resources/land_degradation_index.csv
-  soil-pollution-data-file: src/main/resources/soil_pollution_data.csv
-  radiation-data-file: src/main/resources/radiation.csv
+  cities-file: russia_cities.geojson
+  regions-file: russia_regions.geojson
+  points-file: cities.csv
+  water-data-file: water_data.csv
+  land-degradation-index-file: land_degradation_index.csv
+  soil-pollution-data-file: soil_pollution_data.csv
+  radiation-data-file: radiation.csv
 spring:
   application:
     name: eco-map
@@ -46,8 +46,6 @@ logging:
   level:
     root: info
     com.example.eco_map: debug
-    #    org.hibernate.SQL: debug
-    #    org.hibernate.type.descriptor.sql.BasicBinder: debug:
     org.springframework.transaction: DEBUG
     org.springframework.jdbc.datasource.DataSourceTransactionManager: DEBUG
     org.springframework.transaction.interceptor: TRACE
