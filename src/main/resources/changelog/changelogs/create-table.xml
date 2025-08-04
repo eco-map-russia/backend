@@ -246,4 +246,39 @@
                 referencedTableName="regions"
                 referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="create-table-favorite-regions" author="i.shinova">
+        <createTable tableName="favorite_regions">
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-favorite-regions-region" author="i.shinova">
+        <addForeignKeyConstraint baseTableName="favorite_regions"
+                                 baseColumnNames="region_id"
+                                 constraintName="fk-favorite-regions-region"
+                                 referencedTableName="regions"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="add-fk-favorite-regions-user" author="i.shinova">
+        <addForeignKeyConstraint baseTableName="favorite_regions"
+                                 baseColumnNames="user_id"
+                                 constraintName="fk-favorite-regions-user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="add-unique-constraint-favorite-regions" author="i.shinova">
+        <addUniqueConstraint tableName="favorite_regions"
+                             columnNames="user_id, region_id"
+                             constraintName="uk_favorite_regions_user_region"/>
+    </changeSet>
 </databaseChangeLog>

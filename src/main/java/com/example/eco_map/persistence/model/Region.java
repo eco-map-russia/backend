@@ -50,6 +50,8 @@ public class Region {
     private List<SoilData> soilData = new ArrayList<>();
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<WaterData> waterData = new ArrayList<>();
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    private List<WaterData> favoritesRegions = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

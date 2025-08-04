@@ -1,13 +1,12 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
+import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -60,6 +59,7 @@ public class GlobalExceptionHandler {
         );
         return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
     }
+
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException ex) {
@@ -73,12 +73,14 @@ public class GlobalExceptionHandler {
         log.error("Unhandled RuntimeException", ex);
         return buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Internal server error occurred");
     }
+
     @ExceptionHandler(RegionNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Mono<ErrorResponse> handleRegionNotFoundException(RegionNotFoundException ex) {
         log.warn("Caught RegionNotFoundException: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
+
     @ExceptionHandler(AirQualityNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Mono<ErrorResponse> handleAirQualityNotFoundException(AirQualityNotFoundException ex) {
@@ -91,6 +93,13 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleRadiationNotFoundException(RadiationNotFoundException ex) {
         log.warn("Caught RadiationNotFoundException: {}", ex.getMessage());
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(DuplicateFavoriteRegionException.class)
+    @ResponseStatus(HttpStatus.CONFLICT)
+    public Mono<ErrorResponse> handleDuplicateFavoriteRegionException(DuplicateFavoriteRegionException ex) {
+        log.error("Caught DuplicateFavoriteRegionException", ex);
+        return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
