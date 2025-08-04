@@ -7,6 +7,7 @@ import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
+import com.example.eco_map.api.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -100,6 +101,13 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleDuplicateFavoriteRegionException(DuplicateFavoriteRegionException ex) {
         log.error("Caught DuplicateFavoriteRegionException", ex);
         return buildErrorResponse(HttpStatus.CONFLICT, ex.getMessage());
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
+        log.error("Caught UserNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
