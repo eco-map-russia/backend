@@ -433,10 +433,15 @@ components:
           minLength: 6
         firstName:
           type: string
+          minLength: 1
+          maxLength: 50
         lastName:
           type: string
+          minLength: 1
+          maxLength: 50
         phone:
           type: string
+          pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
 
     RegistrationResponseDto:
       type: object

@@ -36,7 +36,7 @@ public class EnvDataController implements EnvDataApi {
     @Override
     @GetMapping("/regions")
     public Mono<ResponseEntity<Flux<RegionResponseDto>>> getAllRegions(ServerWebExchange exchange) {
-        return Mono.just(ResponseEntity.ok(regionService.getAllRegions()));
+        return Mono.defer(() -> Mono.just(ResponseEntity.ok(regionService.getAllRegions())));
     }
 
     @Override
@@ -52,7 +52,7 @@ public class EnvDataController implements EnvDataApi {
     @Override
     @GetMapping("/map/layer/{type}")
     public Mono<ResponseEntity<Flux<Object>>> getMapLayerData(@PathVariable String type, ServerWebExchange exchange) {
-         return Mono.just(resolver.resolve(type).getMapData()).map(ResponseEntity::ok);
+        return Mono.defer(() -> Mono.just(resolver.resolve(type).getMapData()).map(ResponseEntity::ok));
     }
 
 
@@ -75,7 +75,8 @@ public class EnvDataController implements EnvDataApi {
 
     @GetMapping("/search")
     @Override
-    public Mono<ResponseEntity<Flux<LocationSearchDto>>> searchLocation(@RequestParam String query, ServerWebExchange exchange) {
-        return Mono.just(ResponseEntity.ok(searchService.searchCityOrRegionByName(query)));
+    public Mono<ResponseEntity<Flux<LocationSearchDto>>> searchLocation(@RequestParam String query,
+                                                                        ServerWebExchange exchange) {
+        return Mono.defer(() -> Mono.just(ResponseEntity.ok(searchService.searchCityOrRegionByName(query))));
     }
 }

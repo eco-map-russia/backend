@@ -1,13 +1,15 @@
 package com.example.eco_map.persistence.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,41 +19,34 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 @Entity
-@Table(name = "users")
-@NoArgsConstructor
+@Table(name = "favorite_regions",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_favorite_regions_user_region",
+                columnNames = {"user_id", "region_id"}))
 @AllArgsConstructor
+@NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = "userRoles")
-public class User {
+@ToString(exclude = {"region", "user"})
+public class FavoriteRegion {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    @Column(name = "email", nullable = false)
-    private String email;
-    @Column(name = "first_name")
-    private String firstName;
-    @Column(name = "last_name")
-    private String lastName;
-    @Column(name = "password_hash", nullable = false)
-    private String password;
-    @Column(name = "phone")
-    private String phone;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, updatable = false)
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id", nullable = false, updatable = false)
+    private Region region;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<UserRole> userRoles = new HashSet<>();
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<FavoriteRegion> favoritesRegions = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {
@@ -68,7 +63,7 @@ public class User {
 
         if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
 
-        User that = (User) o;
+        FavoriteRegion that = (FavoriteRegion) o;
 
         return getId() != null && getId().equals(that.getId());
     }
@@ -81,4 +76,5 @@ public class User {
                 .hashCode()
                 : getClass().hashCode();
     }
+
 }
