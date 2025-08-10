@@ -1,12 +1,13 @@
 package com.example.eco_map.persistence.model;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,48 +15,45 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
-@Table(name = "regions")
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "nature_reserves")
 @Getter
 @Setter
-@ToString(exclude = {"cities", "soilData", "waterData", "favoritesRegions", "comment","natureReserves"})
-public class Region {
+@ToString(exclude = "region")
+@AllArgsConstructor
+@NoArgsConstructor
+public class NatureReserve {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    @Column(name = "name")
+
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "center", columnDefinition = "geometry(Point, 4326)", nullable = false)
-    private Point center;
-    @Column(name = "geom", columnDefinition = "geometry(MultiPolygon, 4326)", nullable = false)
-    private MultiPolygon geom;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "region_id")
+    private Region region;
+
+    @Column(name = "area")
+    private Double area;
+
+    @Column(name = "year_founded")
+    private Integer yearFounded;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "website")
+    private String website;
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<City> cities = new ArrayList<>();
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<SoilData> soilData = new ArrayList<>();
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<WaterData> waterData = new ArrayList<>();
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<WaterData> favoritesRegions = new ArrayList<>();
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<Comment> comment = new ArrayList<>();
-    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
-    private List<NatureReserve> natureReserves = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {
@@ -72,7 +70,7 @@ public class Region {
 
         if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
 
-        Region that = (Region) o;
+        NatureReserve that = (NatureReserve) o;
 
         return getId() != null && getId().equals(that.getId());
     }

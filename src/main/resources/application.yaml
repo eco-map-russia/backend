@@ -2,7 +2,7 @@ server:
   port: 8080
 app:
   data-init:
-    enabled: false
+    enabled: true
 air:
   quality:
     batch-size: 3
@@ -27,6 +27,8 @@ import:
   land-degradation-index-file: land_degradation_index.csv
   soil-pollution-data-file: soil_pollution_data.csv
   radiation-data-file: radiation.csv
+  nature-reserve-file: nature-reserve.csv
+
 spring:
   application:
     name: eco-map

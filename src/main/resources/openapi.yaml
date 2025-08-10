@@ -281,6 +281,8 @@ components:
           $ref: '#/components/schemas/SoilRegionDetailsDto'
         waterData:
           $ref: '#/components/schemas/WaterRegionDetailsDto'
+        natureReserves:
+          $ref: '#/components/schemas/NatureReservesDto'
 
     SoilRegionDetailsDto:
       type: object
@@ -523,6 +525,28 @@ components:
         time:
           type: string
           format: date-time
+    NatureReservesDto:
+      type: object
+      properties:
+        natureReserveDetailsDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/NatureReserveDetailsDto'
+
+    NatureReserveDetailsDto:
+      type: object
+      properties:
+        name:
+          type: string
+        area:
+          type: number
+          format: double
+        yearFounded:
+          type: integer
+        description:
+          type: string
+        website:
+          type: string
 
     RadiationMapDto:
       type: object
