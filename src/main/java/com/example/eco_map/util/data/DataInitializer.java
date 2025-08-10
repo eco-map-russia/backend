@@ -1,4 +1,4 @@
-package com.example.eco_map.util;
+package com.example.eco_map.util.data;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

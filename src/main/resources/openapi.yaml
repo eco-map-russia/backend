@@ -402,16 +402,14 @@ components:
 
     AuthRequestDto:
       type: object
-      required:
-        - email
-        - password
       properties:
         email:
           type: string
           format: email
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         password:
           type: string
-          minLength: 6
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
 
     AuthResponseDto:
       type: object
@@ -421,27 +419,31 @@ components:
 
     RegistrationRequestDto:
       type: object
-      required:
-        - email
-        - password
       properties:
         email:
           type: string
           format: email
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         password:
           type: string
           minLength: 6
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         firstName:
           type: string
-          minLength: 1
+          minLength: 2
           maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         lastName:
           type: string
-          minLength: 1
+          minLength: 2
           maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         phone:
           type: string
           pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
+          example: "+7 999 123-45-67"
 
     RegistrationResponseDto:
       type: object

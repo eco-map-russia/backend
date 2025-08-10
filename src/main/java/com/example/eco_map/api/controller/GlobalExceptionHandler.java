@@ -1,6 +1,7 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
+import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
@@ -10,7 +11,9 @@ import com.example.eco_map.api.exception.UserAlreadyExistsException;
 import com.example.eco_map.api.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -21,6 +24,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -107,6 +111,13 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Mono<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
         log.error("Caught UserNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException ex) {
+        log.error("Caught CommentNotFoundException", ex);
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 

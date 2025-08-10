@@ -1,4 +1,4 @@
-package com.example.eco_map.util;
+package com.example.eco_map.util.data;
 
 import com.example.eco_map.config.properties.PathProperties;
 import com.example.eco_map.persistence.model.ObservationPoint;

@@ -29,7 +29,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"cities", "soilData", "waterData"})
+@ToString(exclude = {"cities", "soilData", "waterData", "favoritesRegions", "comment"})
 public class Region {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -52,6 +52,8 @@ public class Region {
     private List<WaterData> waterData = new ArrayList<>();
     @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
     private List<WaterData> favoritesRegions = new ArrayList<>();
+    @OneToMany(mappedBy = "region", cascade = CascadeType.ALL)
+    private List<Comment> comment = new ArrayList<>();
 
     @Override
     public final boolean equals(Object o) {

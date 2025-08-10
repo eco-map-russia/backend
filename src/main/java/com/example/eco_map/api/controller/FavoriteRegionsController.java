@@ -1,15 +1,13 @@
 package com.example.eco_map.api.controller;
 
-import com.example.eco_map.security.CustomUserDetails;
+import com.example.eco_map.security.CurrentUserService;
 import com.example.eco_map.usecases.FavoriteRegionsService;
 import com.example.eco_map.usecases.dto.FavoriteRegionResponseDto;
+import com.example.eco_map.util.PaginationUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,31 +24,31 @@ import java.util.UUID;
 @RequestMapping("/api/v1/favorite-regions")
 public class FavoriteRegionsController {
     private final FavoriteRegionsService favoriteRegionsService;
+    private final CurrentUserService currentUserService;
 
     @GetMapping
     public Mono<ResponseEntity<Page<FavoriteRegionResponseDto>>> getAllFavoriteRegions(
-            @AuthenticationPrincipal CustomUserDetails user,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        Pageable pageable = PageRequest.of(page, size);
-        return favoriteRegionsService.getAllFavoriteRegions(user.getUser().getId(), pageable)
+        Pageable pageable = PaginationUtils.buildPageable(page, size);
+        return currentUserService.getCurrentUser()
+                .flatMap(current ->
+                        favoriteRegionsService.getAllFavoriteRegions(current.getId(), pageable))
                 .map(ResponseEntity::ok);
     }
 
     @PostMapping("/{regionId}")
     public Mono<ResponseEntity<FavoriteRegionResponseDto>> addFavoriteRegion(
-            @PathVariable UUID regionId,
-            @AuthenticationPrincipal CustomUserDetails user) {
+            @PathVariable UUID regionId) {
 
-        return favoriteRegionsService.addFavoriteRegion(user.getUser(), regionId)
+        return currentUserService.getCurrentUser()
+                .flatMap(current -> favoriteRegionsService.addFavoriteRegion(current, regionId))
                 .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
     public Mono<ResponseEntity<Void>> removeFavoriteRegion(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal CustomUserDetails user) {
-
+            @PathVariable UUID id) {
         return favoriteRegionsService.removeFavoriteRegion(id)
                 .thenReturn(ResponseEntity.noContent().build());
     }
