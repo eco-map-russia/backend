@@ -10,6 +10,52 @@ servers:
 security:
   - bearerAuth: [ ]
 paths:
+  /me:
+    get:
+      tags:
+        - Users
+      summary: Получить профиль пользователя
+      operationId: getCurrentUserProfile
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Профиль текущего пользователя успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Users
+      summary: Обновить профиль текущего пользователя
+      operationId: updateCurrentUserProfile
+      requestBody:
+        description: Обновленные данные пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequestDto'
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Профиль текущего пользователя успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdateResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /favorite-regions/{id}:
     delete:
       tags:
@@ -29,6 +75,8 @@ paths:
       responses:
         '204':
           description: Регион успешно удалён из избранного
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /favorite-regions/{regionId}:
     post:
       tags:
@@ -52,18 +100,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FavoriteRegionResponseDto'
-        '404':
-          description: Регион не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
         '409':
-          description: Регион уже в избранном
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/Conflict'
   /favorite-regions:
     get:
       tags:
@@ -96,12 +138,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageFavoriteRegionResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /regions/{regionId}/comments:
     get:
       tags:
         - Comments
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       summary: Получить все комментарии к региону
       operationId: getAllComments
       parameters:
@@ -137,7 +181,7 @@ paths:
           description: Направление сортировки (`asc` или `desc`)
           schema:
             type: string
-            enum: [asc, desc]
+            enum: [ asc, desc ]
             default: desc
 
       responses:
@@ -147,6 +191,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/PageCommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
     post:
       tags:
@@ -154,7 +200,7 @@ paths:
       summary: Добавить комментарий к региону
       operationId: createComment
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       parameters:
         - name: regionId
           in: path
@@ -174,16 +220,14 @@ paths:
           description: Комментарий создан
           content:
             application/json:
-               schema:
-                 $ref: '#/components/schemas/CommentResponseDto'
-        '404':
-          description: Регион не найден
-        '400':
-          description: Невалидный запрос
-          content:
-            application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: '#/components/schemas/CommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
   /comments/{id}:
     patch:
       tags:
@@ -213,24 +257,14 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/CommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '403':
-          description: Пользователь не имеет доступа к редактированию комментария
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/AccessDenied'
         '404':
-          description: Комментарий не найден
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/NotFound'
         '400':
-          description: Невалидный запрос
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/BadRequest'
     delete:
       tags:
         - CommentsModification
@@ -247,14 +281,12 @@ paths:
             type: string
             format: uuid
       responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '204':
           description: Комментарий успешно удалён
         '403':
-          description: Пользователь не имеет права удалить этот комментарий
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
+          $ref: '#/components/responses/AccessDenied'
   /auth/register:
     post:
       tags:
@@ -276,10 +308,10 @@ paths:
                 $ref: '#/components/schemas/RegistrationResponseDto'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalError'
   /auth/login:
     post:
       tags:
@@ -303,8 +335,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
+
   /regions:
     get:
       tags:
@@ -322,8 +353,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegionResponseDto'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /regions/{id}:
     get:
       tags:
@@ -348,8 +379,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /air-quality/current:
     get:
@@ -385,8 +414,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /stations:
     get:
@@ -422,8 +449,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /search:
     get:
@@ -448,8 +473,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LocationSearchDto'
-        '500':
-          $ref: '#/components/responses/InternalError'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -476,8 +499,6 @@ paths:
                 type: array
                 items:
                   type: object
-        '500':
-          $ref: '#/components/responses/InternalError'
         '400':
           $ref: '#/components/responses/IllegalArgumentException'
         '401':
@@ -896,6 +917,41 @@ components:
           type: boolean
         empty:
           type: boolean
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+          example: '+1234567890'
+    UserUpdateRequestDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        phone:
+          type: string
+          pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
+          example: "+7 999 123-45-67"
     FavoriteRegionResponseDto:
       type: object
       properties:
@@ -908,6 +964,9 @@ components:
           description: Название региона
         coordinatesResponseDto:
           $ref: '#/components/schemas/CoordinatesResponseDto'
+    UserUpdateResponseDto:
+      allOf:
+        - $ref: '#/components/schemas/UserDto'
     ErrorResponse:
       type: object
       properties:
@@ -920,6 +979,12 @@ components:
           format: date-time
 
   responses:
+    AccessDenied:
+      description: Доступ запрещён
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     BadRequest:
       description: Неверный запрос
       content:
