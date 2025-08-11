@@ -10,8 +10,10 @@ import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.usecases.CommentService;
 import com.example.eco_map.usecases.dto.CommentResponseDto;
 import com.example.eco_map.usecases.dto.CreateCommentRequestDto;
+import com.example.eco_map.usecases.dto.PageCommentResponseDto;
 import com.example.eco_map.usecases.dto.UpdateCommentRequestDto;
 import com.example.eco_map.usecases.mapper.CommentMapper;
+import com.example.eco_map.usecases.mapper.PageMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,13 +34,18 @@ public class CommentServiceImpl implements CommentService {
     private final Scheduler jdbcScheduler;
     private final CommentMapper commentMapper;
     private final RegionRepository regionRepository;
+    private final PageMapper pageMapper;
+
 
     @Override
-    public Mono<Page<CommentResponseDto>> getAllComments(UUID regionId, Pageable pageable) {
+    public Mono<PageCommentResponseDto> getAllComments(UUID regionId, Pageable pageable) {
         return Mono.fromCallable(() -> commentRepository
                         .findAllByRegionId(regionId, pageable)
                 ).subscribeOn(jdbcScheduler)
-                .map(page -> page.map(commentMapper::toCommentResponseDto));
+                .map(page -> {
+                    Page<CommentResponseDto> dtoPage = page.map(commentMapper::toCommentResponseDto);
+                    return pageMapper.mapToPageComments(dtoPage);
+                });
     }
 
     @Override
