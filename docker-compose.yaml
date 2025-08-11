@@ -1,6 +1,5 @@
 services:
   app:
-    build: .
     env_file:
       - .env
     image: ghcr.io/iraserg/eco-map-app:latest
