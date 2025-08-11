@@ -9,7 +9,9 @@ import com.example.eco_map.persistence.repository.FavoriteRegionsRepository;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.usecases.FavoriteRegionsService;
 import com.example.eco_map.usecases.dto.FavoriteRegionResponseDto;
+import com.example.eco_map.usecases.dto.PageFavoriteRegionResponseDto;
 import com.example.eco_map.usecases.mapper.FavoriteRegionsMapper;
+import com.example.eco_map.usecases.mapper.PageMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +30,7 @@ public class FavoriteRegionsServiceImpl implements FavoriteRegionsService {
     private final Scheduler jdbcScheduler;
     private final FavoriteRegionsMapper regionsMapper;
     private final TransactionTemplate transactionTemplate;
+    private final PageMapper pageMapper;
 
     @Override
     public Mono<FavoriteRegionResponseDto> addFavoriteRegion(User user, UUID regionId) {
@@ -50,10 +53,13 @@ public class FavoriteRegionsServiceImpl implements FavoriteRegionsService {
     }
 
     @Override
-    public Mono<Page<FavoriteRegionResponseDto>> getAllFavoriteRegions(UUID userId, Pageable pageable) {
+    public Mono<PageFavoriteRegionResponseDto> getAllFavoriteRegions(UUID userId, Pageable pageable) {
         return Mono.fromCallable(() -> favoriteRegionsRepository.findAllByUserId(userId, pageable))
                 .subscribeOn(jdbcScheduler)
-                .map(page -> page.map(regionsMapper::toDto));
+                .map(page -> {
+                    Page<FavoriteRegionResponseDto> dtoPage = page.map(regionsMapper::toDto);
+                    return pageMapper.mapToPageFavoriteRegions(dtoPage);
+                });
     }
 
     @Override

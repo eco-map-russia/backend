@@ -10,7 +10,93 @@ servers:
 security:
   - bearerAuth: [ ]
 paths:
-  /api/v1/regions/{regionId}/comments:
+  /favorite-regions/{id}:
+    delete:
+      tags:
+        - FavoriteRegions
+      summary: Удалить регион из избранного
+      operationId: removeFavoriteRegion
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID избранного региона для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Регион успешно удалён из избранного
+  /favorite-regions/{regionId}:
+    post:
+      tags:
+        - FavoriteRegions
+      summary: Добавить регион в избранное
+      operationId: addFavoriteRegion
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: regionId
+          in: path
+          required: true
+          description: ID региона
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Регион добавлен в избранное
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteRegionResponseDto'
+        '404':
+          description: Регион не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Регион уже в избранном
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+  /favorite-regions:
+    get:
+      tags:
+        - FavoriteRegions
+      summary: Получить все избранные регионы текущего пользователя
+      operationId: getAllFavoriteRegions
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список избранных регионов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageFavoriteRegionResponseDto'
+  /regions/{regionId}/comments:
     get:
       tags:
         - Comments
@@ -165,12 +251,6 @@ paths:
           description: Комментарий успешно удалён
         '403':
           description: Пользователь не имеет права удалить этот комментарий
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
-          description: Комментарий не найден
           content:
             application/json:
               schema:
@@ -793,6 +873,41 @@ components:
           type: boolean
         empty:
           type: boolean
+    PageFavoriteRegionResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteRegionResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    FavoriteRegionResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID избранного региона
+        name:
+          type: string
+          description: Название региона
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
     ErrorResponse:
       type: object
       properties:
