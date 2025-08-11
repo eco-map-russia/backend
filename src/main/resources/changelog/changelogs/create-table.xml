@@ -281,4 +281,71 @@
                              columnNames="user_id, region_id"
                              constraintName="uk_favorite_regions_user_region"/>
     </changeSet>
+    <changeSet id="create-table-comments" author="i.shinova">
+        <createTable tableName="comments">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="text" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-comment-region" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="region_id"
+                constraintName="fk-comment-region"
+                referencedTableName="regions"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="add-fk-comment-user" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="comments"
+                baseColumnNames="user_id"
+                constraintName="fk-comment-user"
+                referencedTableName="users"
+                referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="create-table-nature-reserves" author="i.shinova">
+        <createTable tableName="nature_reserves">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="region_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="area" type="float8"/>
+            <column name="year_founded" type="int"/>
+            <column name="description" type="text"/>
+            <column name="website" type="text"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-nature-reserves-region" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="nature_reserves"
+                baseColumnNames="region_id"
+                constraintName="fk-nature-reserves-region"
+                referencedTableName="regions"
+                referencedColumnNames="id"/>
+    </changeSet>
+
 </databaseChangeLog>

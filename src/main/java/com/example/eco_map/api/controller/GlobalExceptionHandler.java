@@ -1,6 +1,7 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
+import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
 import reactor.core.publisher.Mono;
 
+import java.nio.file.AccessDeniedException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
@@ -108,6 +110,20 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleUserNotFoundException(UserNotFoundException ex) {
         log.error("Caught UserNotFoundException", ex);
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException ex) {
+        log.error("Caught CommentNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Mono<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
+        log.error("Caught AccessDeniedException", ex);
+        return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

@@ -1,4 +1,4 @@
-package com.example.eco_map.util;
+package com.example.eco_map.util.data;
 
 import com.opencsv.CSVParser;
 import com.opencsv.CSVParserBuilder;

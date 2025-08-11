@@ -10,6 +10,283 @@ servers:
 security:
   - bearerAuth: [ ]
 paths:
+  /me:
+    get:
+      tags:
+        - Users
+      summary: Получить профиль пользователя
+      operationId: getCurrentUserProfile
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Профиль текущего пользователя успешно получен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - Users
+      summary: Обновить профиль текущего пользователя
+      operationId: updateCurrentUserProfile
+      requestBody:
+        description: Обновленные данные пользователя
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequestDto'
+      security:
+        - bearerAuth: [ ]
+      responses:
+        '200':
+          description: Профиль текущего пользователя успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserUpdateResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /favorite-regions/{id}:
+    delete:
+      tags:
+        - FavoriteRegions
+      summary: Удалить регион из избранного
+      operationId: removeFavoriteRegion
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID избранного региона для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Регион успешно удалён из избранного
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /favorite-regions/{regionId}:
+    post:
+      tags:
+        - FavoriteRegions
+      summary: Добавить регион в избранное
+      operationId: addFavoriteRegion
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: regionId
+          in: path
+          required: true
+          description: ID региона
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Регион добавлен в избранное
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FavoriteRegionResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /favorite-regions:
+    get:
+      tags:
+        - FavoriteRegions
+      summary: Получить все избранные регионы текущего пользователя
+      operationId: getAllFavoriteRegions
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список избранных регионов
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageFavoriteRegionResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /regions/{regionId}/comments:
+    get:
+      tags:
+        - Comments
+      security:
+        - bearerAuth: [ ]
+      summary: Получить все комментарии к региону
+      operationId: getAllComments
+      parameters:
+        - name: regionId
+          in: path
+          required: true
+          description: ID региона
+          schema:
+            type: string
+            format: uuid
+
+        - name: page
+          in: query
+          required: false
+          description: Номер страницы
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+
+        - name: size
+          in: query
+          required: false
+          description: Кол-во элементов на странице
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+
+        - name: direction
+          in: query
+          required: false
+          description: Направление сортировки (`asc` или `desc`)
+          schema:
+            type: string
+            enum: [ asc, desc ]
+            default: desc
+
+      responses:
+        '200':
+          description: Список комментариев
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      tags:
+        - Comments
+      summary: Добавить комментарий к региону
+      operationId: createComment
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: regionId
+          in: path
+          required: true
+          description: ID региона
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateCommentRequestDto'
+      responses:
+        '201':
+          description: Комментарий создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /comments/{id}:
+    patch:
+      tags:
+        - CommentsModification
+      summary: Редактировать комментарий
+      operationId: updateComment
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateCommentRequestDto'
+      responses:
+        '200':
+          description: Комментарий успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentResponseDto'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/AccessDenied'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    delete:
+      tags:
+        - CommentsModification
+      operationId: deleteComment
+      summary: Удалить комментарий
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID комментария
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '204':
+          description: Комментарий успешно удалён
+        '403':
+          $ref: '#/components/responses/AccessDenied'
   /auth/register:
     post:
       tags:
@@ -31,11 +308,10 @@ paths:
                 $ref: '#/components/schemas/RegistrationResponseDto'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/Conflict'
-        '500':
-          $ref: '#/components/responses/InternalError'
-
   /auth/login:
     post:
       tags:
@@ -59,8 +335,7 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
+
   /regions:
     get:
       tags:
@@ -78,8 +353,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegionResponseDto'
-        '500':
-          $ref: '#/components/responses/InternalError'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /regions/{id}:
     get:
       tags:
@@ -104,8 +379,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /air-quality/current:
     get:
@@ -141,8 +414,6 @@ paths:
           $ref: '#/components/responses/NotFound'
         '401':
           $ref: '#/components/responses/Unauthorized'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /stations:
     get:
@@ -178,8 +449,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
-        '500':
-          $ref: '#/components/responses/InternalError'
 
   /search:
     get:
@@ -204,8 +473,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/LocationSearchDto'
-        '500':
-          $ref: '#/components/responses/InternalError'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -232,8 +499,6 @@ paths:
                 type: array
                 items:
                   type: object
-        '500':
-          $ref: '#/components/responses/InternalError'
         '400':
           $ref: '#/components/responses/IllegalArgumentException'
         '401':
@@ -281,6 +546,8 @@ components:
           $ref: '#/components/schemas/SoilRegionDetailsDto'
         waterData:
           $ref: '#/components/schemas/WaterRegionDetailsDto'
+        natureReserves:
+          $ref: '#/components/schemas/NatureReservesDto'
 
     SoilRegionDetailsDto:
       type: object
@@ -402,16 +669,14 @@ components:
 
     AuthRequestDto:
       type: object
-      required:
-        - email
-        - password
       properties:
         email:
           type: string
           format: email
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         password:
           type: string
-          minLength: 6
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
 
     AuthResponseDto:
       type: object
@@ -421,27 +686,31 @@ components:
 
     RegistrationRequestDto:
       type: object
-      required:
-        - email
-        - password
       properties:
         email:
           type: string
           format: email
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         password:
           type: string
           minLength: 6
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         firstName:
           type: string
-          minLength: 1
+          minLength: 2
           maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         lastName:
           type: string
-          minLength: 1
+          minLength: 2
           maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
         phone:
           type: string
           pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
+          example: "+7 999 123-45-67"
 
     RegistrationResponseDto:
       type: object
@@ -521,6 +790,28 @@ components:
         time:
           type: string
           format: date-time
+    NatureReservesDto:
+      type: object
+      properties:
+        natureReserveDetailsDtos:
+          type: array
+          items:
+            $ref: '#/components/schemas/NatureReserveDetailsDto'
+
+    NatureReserveDetailsDto:
+      type: object
+      properties:
+        name:
+          type: string
+        area:
+          type: number
+          format: double
+        yearFounded:
+          type: integer
+        description:
+          type: string
+        website:
+          type: string
 
     RadiationMapDto:
       type: object
@@ -534,6 +825,148 @@ components:
           $ref: '#/components/schemas/CoordinatesResponseDto'
         betaFallout:
           type: number
+    CreateCommentRequestDto:
+      type: object
+      required:
+        - text
+      properties:
+        text:
+          type: string
+          minLength: 1
+          description: Текст комментария
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+    CommentResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID комментария
+        regionId:
+          type: string
+          format: uuid
+          description: ID региона
+        userId:
+          type: string
+          format: uuid
+          description: ID пользователя
+        username:
+          type: string
+          description: Имя пользователя
+        text:
+          type: string
+          description: Текст комментария
+        createdAt:
+          type: string
+          format: date-time
+          description: Дата и время создания
+        updatedAt:
+          type: string
+          format: date-time
+          description: Дата и время обновления
+    UpdateCommentRequestDto:
+      type: object
+      properties:
+        text:
+          type: string
+          minLength: 1
+          maxLength: 1000
+      required:
+        - text
+    PageCommentResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CommentResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    PageFavoriteRegionResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/FavoriteRegionResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    UserDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        email:
+          type: string
+          format: email
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+          example: '+1234567890'
+    UserUpdateRequestDto:
+      type: object
+      properties:
+        firstName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        lastName:
+          type: string
+          minLength: 2
+          maxLength: 50
+          pattern: "^[А-Яа-яA-Za-z]+$"
+          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+        phone:
+          type: string
+          pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
+          example: "+7 999 123-45-67"
+    FavoriteRegionResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID избранного региона
+        name:
+          type: string
+          description: Название региона
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+    UserUpdateResponseDto:
+      allOf:
+        - $ref: '#/components/schemas/UserDto'
     ErrorResponse:
       type: object
       properties:
@@ -546,6 +979,12 @@ components:
           format: date-time
 
   responses:
+    AccessDenied:
+      description: Доступ запрещён
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
     BadRequest:
       description: Неверный запрос
       content:

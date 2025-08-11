@@ -1,4 +1,4 @@
-package com.example.eco_map.util;
+package com.example.eco_map.util.data;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +24,7 @@ public class DataInitializer implements CommandLineRunner {
     private final LandDegradationBalanceIndexImporter landDegradationBalanceIndexImporter;
     private final ObservationPointImporter observationPointImporter;
     private final RadiationDataImporter radiationDataImporter;
+    private final NatureReservesImporter natureReservesImporter;
 
     @Override
     public void run(String... args) {
@@ -48,6 +49,9 @@ public class DataInitializer implements CommandLineRunner {
 
             log.info("Importing radiation data...");
             radiationDataImporter.importRadiationData();
+
+            log.info("Importing nature reserves...");
+            natureReservesImporter.importNatureReserves();
 
         } catch (Exception e) {
             log.error("Failed during initialization", e);
