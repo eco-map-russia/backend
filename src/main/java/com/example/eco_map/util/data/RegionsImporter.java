@@ -18,9 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 
@@ -39,10 +36,8 @@ public class RegionsImporter {
     public void importRegions() throws IOException, ParseException {
 
         try (InputStream is = new ClassPathResource(pathProperties.getRegionsFile()).getInputStream()) {
-            String content = new String(is.readAllBytes(), StandardCharsets.UTF_8);
-            JsonNode root = objectMapper.readTree(content);
+            JsonNode root = objectMapper.readTree(is);
             JsonNode features = root.get("features");
-            List<Region> regions = new ArrayList<>();
 
             for (JsonNode feature : features) {
                 String regionName = Optional.ofNullable(feature.get("properties"))
@@ -60,9 +55,8 @@ public class RegionsImporter {
                 region.setGeom(multiPolygon);
                 region.setCenter(center);
 
-                regions.add(region);
+                regionRepository.save(region);
             }
-            regionRepository.saveAll(regions);
 
         }
 
