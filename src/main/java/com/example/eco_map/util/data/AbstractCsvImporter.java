@@ -6,7 +6,8 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -18,15 +19,17 @@ import java.util.function.Function;
 @Slf4j
 @RequiredArgsConstructor
 public abstract class AbstractCsvImporter<T> {
+    private final ResourceLoader resourceLoader;
 
     public void importLines(Function<String[], T> parser, String filePath) {
+        Resource resource = resourceLoader.getResource(filePath);
         List<T> lines = new ArrayList<>();
         CSVParser csvParser = new CSVParserBuilder()
                 .withSeparator(';')
                 .withQuoteChar('"')
                 .build();
 
-        try (InputStream is = new ClassPathResource(filePath).getInputStream();
+        try (InputStream is = resource.getInputStream();
              InputStreamReader isr = new InputStreamReader(is, StandardCharsets.UTF_8);
              CSVReader reader = new CSVReaderBuilder(isr).withCSVParser(csvParser).build()) {
             reader.readNext();

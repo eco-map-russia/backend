@@ -1,6 +1,7 @@
 package com.example.eco_map.usecases.impl;
 
 import com.example.eco_map.api.exception.RegionNotFoundException;
+import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.usecases.RegionDetailsAggregator;
 import com.example.eco_map.usecases.RegionService;
@@ -9,6 +10,7 @@ import com.example.eco_map.usecases.dto.RegionResponseDto;
 import com.example.eco_map.usecases.mapper.RegionMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
@@ -40,5 +42,11 @@ public class RegionServiceImpl implements RegionService {
                         .map(regionDetailsAggregator::buildDetails)
                         .orElseGet(() -> Mono.error(new RegionNotFoundException("Region not found"))))
                 .subscribeOn(jdbcScheduler);
+    }
+
+    @Override
+    @Transactional
+    public void saveRegion(Region region) {
+        regionRepository.save(region);
     }
 }

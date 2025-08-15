@@ -20,14 +20,14 @@ air:
       - dust
       - methane
 import:
-  cities-file: russia_cities.geojson
-  regions-file: russia_regions.geojson
-  points-file: cities.csv
-  water-data-file: water_data.csv
-  land-degradation-index-file: land_degradation_index.csv
-  soil-pollution-data-file: soil_pollution_data.csv
-  radiation-data-file: radiation.csv
-  nature-reserve-file: nature-reserve.csv
+  cities-file: classpath:data/russia_cities.geojson
+  regions-file: classpath:data/russia_regions.geojson
+  points-file: classpath:data/cities.csv
+  water-data-file: classpath:data/water_data.csv
+  land-degradation-index-file: classpath:data/land_degradation_index.csv
+  soil-pollution-data-file: classpath:data/soil_pollution_data.csv
+  radiation-data-file: classpath:data/radiation.csv
+  nature-reserve-file: classpath:data/nature-reserve.csv
 
 spring:
   application:
