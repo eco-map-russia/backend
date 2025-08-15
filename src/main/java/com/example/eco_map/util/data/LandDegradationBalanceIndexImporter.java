@@ -5,8 +5,8 @@ import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.model.SoilData;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.persistence.repository.SoilDataRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<SoilData> {
 
@@ -30,8 +29,19 @@ public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<Soi
 
     private Map<String, SoilData> soilDataMap;
 
+    public LandDegradationBalanceIndexImporter(ResourceLoader resourceLoader,
+                                               RegionRepository regionRepository,
+                                               SoilDataRepository soilDataRepository,
+                                               PathProperties pathProperties) {
+        super(resourceLoader);
+        this.regionRepository = regionRepository;
+        this.soilDataRepository = soilDataRepository;
+        this.pathProperties = pathProperties;
+    }
+
 
     public void importDegradationBalanceIndex() {
+
         this.regionMap = regionRepository.findAll().stream()
                 .collect(Collectors.toMap(r -> r.getName().toLowerCase(), Function.identity()));
         this.soilDataMap = soilDataRepository.findAllWithRegion().stream()
@@ -39,7 +49,6 @@ public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<Soi
                         data -> data.getRegion().getName().toLowerCase(),
                         Function.identity()
                 ));
-        log.info("soilDataMap.toString()" + soilDataMap.toString());
         importLines(this::parseLine, pathProperties.getLandDegradationIndexFile());
     }
 

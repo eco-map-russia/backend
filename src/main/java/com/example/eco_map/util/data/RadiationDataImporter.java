@@ -5,18 +5,17 @@ import com.example.eco_map.persistence.model.ObservationPoint;
 import com.example.eco_map.persistence.model.RadiationData;
 import com.example.eco_map.persistence.repository.ObservationPointRepository;
 import com.example.eco_map.persistence.repository.RadiationDataRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class RadiationDataImporter extends AbstractCsvImporter<RadiationData> {
     private static final Integer LAT_INDEX = 1;
@@ -28,6 +27,20 @@ public class RadiationDataImporter extends AbstractCsvImporter<RadiationData> {
     private final AssignationService assignationService;
     private final ObservationPointRepository observationPointRepository;
     private final RadiationDataRepository radiationDataRepository;
+
+    public RadiationDataImporter(ResourceLoader resourceLoader,
+                                 PathProperties pathProperties,
+                                 GeometryFactory geometryFactory,
+                                 AssignationService assignationService,
+                                 ObservationPointRepository observationPointRepository,
+                                 RadiationDataRepository radiationDataRepository) {
+        super(resourceLoader);
+        this.pathProperties = pathProperties;
+        this.geometryFactory = geometryFactory;
+        this.assignationService = assignationService;
+        this.observationPointRepository = observationPointRepository;
+        this.radiationDataRepository = radiationDataRepository;
+    }
 
     public void importRadiationData() {
         importLines(this::parseLine, pathProperties.getRadiationDataFile());
@@ -57,8 +70,6 @@ public class RadiationDataImporter extends AbstractCsvImporter<RadiationData> {
         List<ObservationPoint> pointsWithCities = assignationService.assignCitiesToPoints(points);
 
         observationPointRepository.saveAll(pointsWithCities);
-        log.info("saved " + points.size() + " points");
         radiationDataRepository.saveAll(records);
-        log.info("saved " + points.size() + " points");
     }
 }

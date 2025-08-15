@@ -5,8 +5,8 @@ import com.example.eco_map.persistence.model.NatureReserve;
 import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.repository.NatureReservesRepository;
 import com.example.eco_map.persistence.repository.RegionRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class NatureReservesImporter extends AbstractCsvImporter<NatureReserve> {
     private static final Integer REGION_INDEX = 2;
@@ -31,6 +30,16 @@ public class NatureReservesImporter extends AbstractCsvImporter<NatureReserve> {
     private final NatureReservesRepository natureReservesRepository;
 
     private Map<String, Region> regionMap;
+
+    public NatureReservesImporter(ResourceLoader resourceLoader,
+                                  RegionRepository regionRepository,
+                                  PathProperties pathProperties,
+                                  NatureReservesRepository natureReservesRepository) {
+        super(resourceLoader);
+        this.regionRepository = regionRepository;
+        this.pathProperties = pathProperties;
+        this.natureReservesRepository = natureReservesRepository;
+    }
 
     public void importNatureReserves() {
         this.regionMap = regionRepository.findAll().stream()

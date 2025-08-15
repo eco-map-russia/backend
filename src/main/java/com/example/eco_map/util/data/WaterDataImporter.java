@@ -5,8 +5,8 @@ import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.model.WaterData;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.persistence.repository.WaterDataRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class WaterDataImporter extends AbstractCsvImporter<WaterData> {
 
@@ -28,6 +27,16 @@ public class WaterDataImporter extends AbstractCsvImporter<WaterData> {
     private final PathProperties pathProperties;
 
     private Map<String, Region> regionMap;
+
+    public WaterDataImporter(ResourceLoader resourceLoader,
+                             WaterDataRepository waterDataRepository,
+                             RegionRepository regionRepository,
+                             PathProperties pathProperties) {
+        super(resourceLoader);
+        this.waterDataRepository = waterDataRepository;
+        this.regionRepository = regionRepository;
+        this.pathProperties = pathProperties;
+    }
 
     public void importWaterData() {
         this.regionMap = regionRepository.findAll().stream()

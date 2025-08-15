@@ -1,5 +1,7 @@
 package com.example.eco_map.config;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
@@ -33,5 +35,14 @@ public class EcoMapConfig {
         return new TransactionTemplate(transactionManager);
     }
 
+    @Bean
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper();
+    }
+
+    @Bean
+    public JsonFactory jsonFactory(ObjectMapper objectMapper) {
+        return new JsonFactory(objectMapper);
+    }
 
 }

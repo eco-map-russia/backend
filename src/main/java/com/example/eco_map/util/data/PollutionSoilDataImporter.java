@@ -5,8 +5,8 @@ import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.model.SoilData;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.persistence.repository.SoilDataRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,7 +16,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class PollutionSoilDataImporter extends AbstractCsvImporter<SoilData> {
 
@@ -27,6 +26,16 @@ public class PollutionSoilDataImporter extends AbstractCsvImporter<SoilData> {
     private final SoilDataRepository soilDataRepository;
     private final PathProperties pathProperties;
     private Map<String, Region> regionMap;
+
+    public PollutionSoilDataImporter(ResourceLoader resourceLoader,
+                                     RegionRepository regionRepository,
+                                     SoilDataRepository soilDataRepository,
+                                     PathProperties pathProperties) {
+        super(resourceLoader);
+        this.regionRepository = regionRepository;
+        this.soilDataRepository = soilDataRepository;
+        this.pathProperties = pathProperties;
+    }
 
     public void importPollutionSoilData() {
         this.regionMap = regionRepository.findAll().stream()

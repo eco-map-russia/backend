@@ -1,5 +1,6 @@
 package com.example.eco_map.usecases;
 
+import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.usecases.dto.RegionDetailsDto;
 import com.example.eco_map.usecases.dto.RegionResponseDto;
 import reactor.core.publisher.Flux;
@@ -11,4 +12,6 @@ public interface RegionService {
     Flux<RegionResponseDto> getAllRegions();
 
     Mono<RegionDetailsDto> getRegionById(UUID id);
+
+    void saveRegion(Region region);
 }

@@ -3,18 +3,17 @@ package com.example.eco_map.util.data;
 import com.example.eco_map.config.properties.PathProperties;
 import com.example.eco_map.persistence.model.ObservationPoint;
 import com.example.eco_map.persistence.repository.ObservationPointRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class ObservationPointImporter extends AbstractCsvImporter<ObservationPoint> {
     private static final Integer LAT_INDEX = 20;
@@ -24,6 +23,18 @@ public class ObservationPointImporter extends AbstractCsvImporter<ObservationPoi
     private final GeometryFactory geometryFactory;
     private final AssignationService assignationService;
     private final ObservationPointRepository observationPointRepository;
+
+    public ObservationPointImporter(ResourceLoader resourceLoader,
+                                    PathProperties pathProperties,
+                                    GeometryFactory geometryFactory,
+                                    AssignationService assignationService,
+                                    ObservationPointRepository observationPointRepository) {
+        super(resourceLoader);
+        this.pathProperties = pathProperties;
+        this.geometryFactory = geometryFactory;
+        this.assignationService = assignationService;
+        this.observationPointRepository = observationPointRepository;
+    }
 
     public void importObservationPoint() {
         importLines(this::parseLine, pathProperties.getPointsFile());
