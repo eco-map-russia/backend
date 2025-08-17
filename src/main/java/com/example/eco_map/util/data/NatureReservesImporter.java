@@ -44,7 +44,6 @@ public class NatureReservesImporter extends AbstractCsvImporter<NatureReserve> {
     public void importNatureReserves() {
         this.regionMap = regionRepository.findAll().stream()
                 .collect(Collectors.toMap(r -> r.getName().toLowerCase(), Function.identity()));
-
         importLines(this::parseLine, pathProperties.getNatureReserveFile());
     }
 

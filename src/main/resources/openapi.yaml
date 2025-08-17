@@ -56,6 +56,121 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '404':
           $ref: '#/components/responses/NotFound'
+  /api/v1/admin/soil:
+    post:
+      tags:
+        - AdminSoilData
+      summary: Добавить данные о состоянии почвы
+      operationId: addSoilData
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoilDataRequestDto'
+      responses:
+        '201':
+          description: Данные о почве успешно созданы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoilDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+        - AdminSoilData
+      summary: Получить список данных о состоянии почвы
+      operationId: getSoilData
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список записей о состоянии почвы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageSoilDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/admin/soil/{id}:
+    put:
+      tags:
+        - AdminSoilData
+      summary: Обновить данные о состоянии почвы
+      operationId: updateSoilData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID записи почвы для обновления
+          schema:
+            type: string
+            format: uuid
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateSoilDataRequestDto'
+
+      responses:
+        '200':
+          description: Запись о состоянии почвы успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SoilDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - AdminSoilData
+      summary: Удалить запись о данных почвы
+      operationId: deleteSoilData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID записи почвы для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Успешное удаление. Тело ответа отсутствует.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /favorite-regions/{id}:
     delete:
       tags:
@@ -100,10 +215,10 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/FavoriteRegionResponseDto'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
         '409':
           $ref: '#/components/responses/Conflict'
   /favorite-regions:
@@ -967,6 +1082,78 @@ components:
     UserUpdateResponseDto:
       allOf:
         - $ref: '#/components/schemas/UserDto'
+    SoilDataRequestDto:
+      type: object
+      required:
+        - regionId
+      properties:
+        regionId:
+          type: string
+          format: uuid
+        chronicSoilPollutionPercent:
+          type: number
+          format: double
+        landDegradationNeutralityIndex:
+          type: number
+          format: double
+    SoilDataResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        regionId:
+          type: string
+          format: uuid
+        regionName:
+          type: string
+        chronicSoilPollutionPercent:
+          type: number
+          format: double
+        landDegradationNeutralityIndex:
+          type: number
+          format: double
+    PageSoilDataResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/SoilDataResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        numberOfElements:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+    UpdateSoilDataRequestDto:
+      type: object
+      required:
+        - id
+        - regionId
+      properties:
+        id:
+          type: string
+          format: uuid
+        regionId:
+          type: string
+          format: uuid
+        chronicSoilPollutionPercent:
+          type: number
+          format: double
+        landDegradationNeutralityIndex:
+          type: number
+          format: double
     ErrorResponse:
       type: object
       properties:

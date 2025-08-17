@@ -7,6 +7,8 @@ import com.example.eco_map.api.exception.ErrorResponse;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
+import com.example.eco_map.api.exception.SoilDataNotFoundException;
+import com.example.eco_map.api.exception.SoilDataUpdateException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
 import com.example.eco_map.api.exception.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -124,6 +126,20 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("Caught AccessDeniedException", ex);
         return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(SoilDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleSoilDataUpdateException(SoilDataUpdateException ex) {
+        log.error("Caught SoilDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(SoilDataNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleSoilDataNotFoundException(SoilDataNotFoundException ex) {
+        log.error("Caught SoilDataNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
