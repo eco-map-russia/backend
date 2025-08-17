@@ -4,6 +4,7 @@ import com.example.eco_map.api.exception.AirQualityNotFoundException;
 import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
+import com.example.eco_map.api.exception.RadiationDataUpdateException;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
@@ -156,6 +157,13 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleSoilDataNotFoundException(SoilDataNotFoundException ex) {
         log.error("Caught SoilDataNotFoundException", ex);
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(RadiationDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleRadiationDataUpdateException(RadiationDataUpdateException ex) {
+        log.error("Caught RadiationDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

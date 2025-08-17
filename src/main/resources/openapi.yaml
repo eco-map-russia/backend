@@ -285,7 +285,118 @@ paths:
           description: Успешное удаление. Тело ответа отсутствует.
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /api/v1/admin/radiation:
+    post:
+      tags:
+        - AdminRadiationData
+      summary: Добавить данные о радиации
+      operationId: addRadiationData
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RadiationDataRequestDto'
+      responses:
+        '201':
+          description: Данные о радиации успешно созданы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RadiationDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 
+    get:
+      tags:
+        - AdminRadiationData
+      summary: Получить список данных о радиации
+      operationId: getRadiation
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список записей о радиации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageRadiationDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/admin/radiation/{id}:
+    put:
+      tags:
+        - AdminRadiationData
+      summary: Обновить данные о радиации
+      operationId: updateRadiationData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRadiationDataRequestDto'
+      responses:
+        '200':
+          description: Данные успешно обновлены
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RadiationDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - AdminRadiationData
+      summary: Удалить запись о радиации
+      operationId: deleteRadiationData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Успешное удаление. Тело ответа отсутствует.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /favorite-regions/{id}:
     delete:
       tags:
@@ -1334,6 +1445,75 @@ components:
           type: boolean
         empty:
           type: boolean
+    RadiationDataRequestDto:
+      type: object
+      required:
+        - pointId
+        - betaFallout
+      properties:
+        pointId:
+          type: string
+          format: uuid
+        betaFallout:
+          type: number
+          format: double
+
+    UpdateRadiationDataRequestDto:
+      type: object
+      required:
+        - id
+        - pointId
+        - betaFallout
+      properties:
+        id:
+          type: string
+          format: uuid
+        pointId:
+          type: string
+          format: uuid
+        betaFallout:
+          type: number
+          format: double
+
+    RadiationDataResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        pointId:
+          type: string
+          format: uuid
+        pointName:
+          type: string
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+        betaFallout:
+          type: number
+          format: double
+
+    PageRadiationDataResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/RadiationDataResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+
     ErrorResponse:
       type: object
       properties:

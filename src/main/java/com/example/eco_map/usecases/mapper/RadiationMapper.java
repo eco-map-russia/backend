@@ -3,6 +3,8 @@ package com.example.eco_map.usecases.mapper;
 import com.example.eco_map.persistence.model.RadiationData;
 import com.example.eco_map.usecases.dto.CoordinatesResponseDto;
 import com.example.eco_map.usecases.dto.RadiationDataDto;
+import com.example.eco_map.usecases.dto.RadiationDataRequestDto;
+import com.example.eco_map.usecases.dto.RadiationDataResponseDto;
 import com.example.eco_map.usecases.dto.RadiationMapDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,6 +19,13 @@ public interface RadiationMapper {
     @Mapping(source = "observationPoint.name", target = "pointName")
     @Mapping(source = "data", target = "coordinatesResponseDto", qualifiedByName = "toCoordinates")
     RadiationMapDto toMapDto(RadiationData data);
+
+    RadiationData toEntity(RadiationDataRequestDto requestDto);
+
+    @Mapping(source = "observationPoint.id", target = "pointId")
+    @Mapping(source = "observationPoint.name", target = "pointName")
+    @Mapping(source = "data", target = "coordinatesResponseDto", qualifiedByName = "toCoordinates")
+    RadiationDataResponseDto toResponseDto(RadiationData data);
 
     @Named("toCoordinates")
     default CoordinatesResponseDto mapToCoordinates(RadiationData data) {
