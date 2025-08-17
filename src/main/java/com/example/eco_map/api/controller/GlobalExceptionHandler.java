@@ -11,6 +11,8 @@ import com.example.eco_map.api.exception.SoilDataNotFoundException;
 import com.example.eco_map.api.exception.SoilDataUpdateException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
 import com.example.eco_map.api.exception.UserNotFoundException;
+import com.example.eco_map.api.exception.WaterDataNotFoundException;
+import com.example.eco_map.api.exception.WaterDataUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -132,6 +134,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleSoilDataUpdateException(SoilDataUpdateException ex) {
         log.error("Caught SoilDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(WaterDataNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleWaterDataNotFoundException(WaterDataNotFoundException ex) {
+        log.error("Caught WaterDataNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(WaterDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleWaterDataUpdateException(WaterDataUpdateException ex) {
+        log.error("Caught WaterDataUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

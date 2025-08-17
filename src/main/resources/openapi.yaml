@@ -171,6 +171,121 @@ paths:
           description: Успешное удаление. Тело ответа отсутствует.
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /api/v1/admin/water:
+    post:
+      tags:
+        - AdminWaterData
+      summary: Добавить данные о состоянии воды
+      operationId: addWaterData
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WaterDataRequestDto'
+      responses:
+        '201':
+          description: Данные о воде успешно созданы
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaterDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    get:
+      tags:
+        - AdminWaterData
+      summary: Получить список данных о состоянии воды
+      operationId: getWaterData
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список записей о состоянии воды
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageWaterDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/admin/water/{id}:
+    put:
+      tags:
+        - AdminWaterData
+      summary: Обновить данные о состоянии воды
+      operationId: updateWaterData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID записи воды для обновления
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateWaterDataRequestDto'
+      responses:
+        '200':
+          description: Запись о состоянии воды успешно обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WaterDataResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - AdminWaterData
+      summary: Удалить запись о данных воды
+      operationId: deleteWaterData
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID записи воды для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Успешное удаление. Тело ответа отсутствует.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
   /favorite-regions/{id}:
     delete:
       tags:
@@ -1154,6 +1269,71 @@ components:
         landDegradationNeutralityIndex:
           type: number
           format: double
+    WaterDataResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        regionId:
+          type: string
+          format: uuid
+        regionName:
+          type: string
+        dirtySurfaceWaterPercent:
+          type: number
+          format: double
+
+    WaterDataRequestDto:
+      type: object
+      required:
+        - regionId
+      properties:
+        regionId:
+          type: string
+          format: uuid
+        dirtySurfaceWaterPercent:
+          type: number
+          format: double
+
+    UpdateWaterDataRequestDto:
+      type: object
+      required:
+        - id
+        - regionId
+        - dirtySurfaceWaterPercent
+      properties:
+        id:
+          type: string
+          format: uuid
+        regionId:
+          type: string
+          format: uuid
+        dirtySurfaceWaterPercent:
+          type: number
+          format: double
+
+    PageWaterDataResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/WaterDataResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
     ErrorResponse:
       type: object
       properties:

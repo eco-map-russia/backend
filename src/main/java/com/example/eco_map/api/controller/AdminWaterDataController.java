@@ -1,11 +1,11 @@
 package com.example.eco_map.api.controller;
 
-import com.example.eco_map.api.AdminSoilDataApi;
-import com.example.eco_map.usecases.SoilDataService;
-import com.example.eco_map.usecases.dto.PageSoilDataResponseDto;
-import com.example.eco_map.usecases.dto.SoilDataRequestDto;
-import com.example.eco_map.usecases.dto.SoilDataResponseDto;
-import com.example.eco_map.usecases.dto.UpdateSoilDataRequestDto;
+import com.example.eco_map.api.AdminWaterDataApi;
+import com.example.eco_map.usecases.WaterDataService;
+import com.example.eco_map.usecases.dto.PageWaterDataResponseDto;
+import com.example.eco_map.usecases.dto.UpdateWaterDataRequestDto;
+import com.example.eco_map.usecases.dto.WaterDataRequestDto;
+import com.example.eco_map.usecases.dto.WaterDataResponseDto;
 import com.example.eco_map.util.PaginationUtils;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -27,46 +27,46 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("api/v1/admin/soil")
 @RequiredArgsConstructor
-public class AdminSoilDataController implements AdminSoilDataApi {
-    private final SoilDataService soilDataService;
+@RequestMapping("api/v1/admin/water")
+public class AdminWaterDataController implements AdminWaterDataApi{
+    private final WaterDataService waterDataService;
 
     @PostMapping
-    public Mono<ResponseEntity<SoilDataResponseDto>> addSoilData(
-            @RequestBody @Valid Mono<SoilDataRequestDto> soilDataRequestDtoMono,
+    public Mono<ResponseEntity<WaterDataResponseDto>> addWaterData(
+            @RequestBody @Valid Mono<WaterDataRequestDto> waterDataRequestDtoMono,
             ServerWebExchange exchange) {
-        return soilDataRequestDtoMono.flatMap(
-                soilDataService::addSoilData
-        ).map(soilDataResponseDto -> new ResponseEntity<>(soilDataResponseDto, HttpStatus.CREATED));
+        return waterDataRequestDtoMono.flatMap(
+                waterDataService::addWaterData
+        ).map(waterDataResponseDto -> new ResponseEntity<>(waterDataResponseDto, HttpStatus.CREATED));
     }
 
     @GetMapping
-    public Mono<ResponseEntity<PageSoilDataResponseDto>> getSoilData(
+    public Mono<ResponseEntity<PageWaterDataResponseDto>> getWaterData(
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "10") Integer size,
             ServerWebExchange exchange
     ) {
         Pageable pageable = PaginationUtils.buildPageable(page, size);
-        return soilDataService.getSoilData(pageable)
+        return waterDataService.getAllWaterData(pageable)
                 .map(ResponseEntity::ok);
     }
 
     @PutMapping("/{id}")
-    public Mono<ResponseEntity<SoilDataResponseDto>> updateSoilData(
+    public Mono<ResponseEntity<WaterDataResponseDto>> updateWaterData(
             @PathVariable UUID id,
-            @RequestBody @Valid Mono<UpdateSoilDataRequestDto> soilDataRequestDtoMono,
+            @RequestBody @Valid Mono<UpdateWaterDataRequestDto> waterDataRequestDtoMono,
             ServerWebExchange exchange) {
-        return soilDataRequestDtoMono.flatMap(
-                        soilDataRequestDto -> soilDataService.updateSoilData(id, soilDataRequestDto))
+        return waterDataRequestDtoMono.flatMap(
+                        waterDataRequestDto -> waterDataService.updateWaterData(id, waterDataRequestDto))
                 .map(ResponseEntity::ok);
     }
 
     @DeleteMapping("/{id}")
-    public Mono<ResponseEntity<Void>> deleteSoilData(
+    public Mono<ResponseEntity<Void>> deleteWaterData(
             @PathVariable UUID id,
             ServerWebExchange exchange) {
-        return soilDataService.removeSoilData(id)
+        return waterDataService.removeWaterData(id)
                 .thenReturn(ResponseEntity.noContent().build());
     }
 }
