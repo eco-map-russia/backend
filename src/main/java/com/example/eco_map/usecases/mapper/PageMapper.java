@@ -1,17 +1,21 @@
 package com.example.eco_map.usecases.mapper;
 
+import com.example.eco_map.usecases.dto.CityDto;
 import com.example.eco_map.usecases.dto.CommentResponseDto;
 import com.example.eco_map.usecases.dto.FavoriteRegionResponseDto;
 import com.example.eco_map.usecases.dto.NatureReserveResponseDto;
 import com.example.eco_map.usecases.dto.ObservationPointResponseDto;
+import com.example.eco_map.usecases.dto.PageCityResponseDto;
 import com.example.eco_map.usecases.dto.PageCommentResponseDto;
 import com.example.eco_map.usecases.dto.PageFavoriteRegionResponseDto;
 import com.example.eco_map.usecases.dto.PageNatureReserveResponseDto;
 import com.example.eco_map.usecases.dto.PageObservationPointResponseDto;
 import com.example.eco_map.usecases.dto.PageRadiationDataResponseDto;
+import com.example.eco_map.usecases.dto.PageRegionResponseDto;
 import com.example.eco_map.usecases.dto.PageSoilDataResponseDto;
 import com.example.eco_map.usecases.dto.PageWaterDataResponseDto;
 import com.example.eco_map.usecases.dto.RadiationDataResponseDto;
+import com.example.eco_map.usecases.dto.RegionDto;
 import com.example.eco_map.usecases.dto.SoilDataResponseDto;
 import com.example.eco_map.usecases.dto.WaterDataResponseDto;
 import org.mapstruct.Mapper;
@@ -90,4 +94,24 @@ public interface PageMapper {
     @Mapping(target = "last", source = "page.last")
     @Mapping(target = "empty", source = "page.empty")
     PageObservationPointResponseDto mapToPageObservationPointResponse(Page<ObservationPointResponseDto> page);
+
+    @Mapping(target = "content", source = "page.content")
+    @Mapping(target = "number", source = "page.number")
+    @Mapping(target = "size", source = "page.size")
+    @Mapping(target = "totalElements", source = "page.totalElements")
+    @Mapping(target = "totalPages", source = "page.totalPages")
+    @Mapping(target = "first", source = "page.first")
+    @Mapping(target = "last", source = "page.last")
+    @Mapping(target = "empty", source = "page.empty")
+    PageRegionResponseDto mapToPageRegionResponse(Page<RegionDto> page);
+
+    @Mapping(target = "content", source = "page.content")
+    @Mapping(target = "number", source = "page.number")
+    @Mapping(target = "size", source = "page.size")
+    @Mapping(target = "totalElements", source = "page.totalElements")
+    @Mapping(target = "totalPages", source = "page.totalPages")
+    @Mapping(target = "first", source = "page.first")
+    @Mapping(target = "last", source = "page.last")
+    @Mapping(target = "empty", source = "page.empty")
+    PageCityResponseDto mapToPageCityResponse(Page<CityDto> page);
 }

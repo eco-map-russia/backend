@@ -27,5 +27,4 @@ public interface RegionMapper {
     default Double pointToYCoordinate(Point center) {
         return center.getY();
     }
-
 }

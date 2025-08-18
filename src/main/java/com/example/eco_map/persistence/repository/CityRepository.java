@@ -1,7 +1,11 @@
 package com.example.eco_map.persistence.repository;
 
 import com.example.eco_map.persistence.model.City;
+import com.example.eco_map.usecases.dto.CityDto;
+import com.example.eco_map.usecases.dto.RegionDto;
 import org.locationtech.jts.geom.Point;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,4 +24,7 @@ public interface CityRepository extends JpaRepository<City, UUID> {
             LIMIT 1
             """, nativeQuery = true)
     City findNearestCity(@Param("point") Point point);
+
+    @Query("SELECT new com.example.eco_map.usecases.dto.CityDto(c.id, c.name) FROM City c")
+    Page<CityDto> findAllWithoutCoordinates(Pageable pageable);
 }
