@@ -7,6 +7,7 @@ import com.example.eco_map.usecases.dto.AuthRequestDto;
 import com.example.eco_map.usecases.dto.AuthResponseDto;
 import com.example.eco_map.usecases.dto.RegistrationRequestDto;
 import com.example.eco_map.usecases.dto.RegistrationResponseDto;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +27,7 @@ public class AuthController implements AuthApi {
     @PostMapping("/login")
     @Override
     public Mono<ResponseEntity<AuthResponseDto>> loginUser(
-            @RequestBody Mono<AuthRequestDto> authRequestDtoMono,
+            @RequestBody @Valid Mono<AuthRequestDto> authRequestDtoMono,
             ServerWebExchange exchange) {
 
         return authRequestDtoMono
@@ -38,7 +39,7 @@ public class AuthController implements AuthApi {
     @PostMapping("/register")
     @Override
     public Mono<ResponseEntity<RegistrationResponseDto>> registerUser(
-            @RequestBody Mono<RegistrationRequestDto> registrationRequestDto,
+            @RequestBody @Valid Mono<RegistrationRequestDto> registrationRequestDto,
             ServerWebExchange exchange) {
 
         return registrationRequestDto

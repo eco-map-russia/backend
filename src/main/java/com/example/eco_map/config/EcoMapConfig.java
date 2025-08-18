@@ -2,9 +2,12 @@ package com.example.eco_map.config;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.geojson.GeoJsonReader;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -36,8 +39,16 @@ public class EcoMapConfig {
     }
 
     @Bean
+    public Jackson2ObjectMapperBuilderCustomizer jsonCustomizer() {
+        return builder -> builder.modulesToInstall(new JavaTimeModule());
+    }
+
+    @Bean
     public ObjectMapper objectMapper() {
-        return new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        return mapper;
     }
 
     @Bean

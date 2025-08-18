@@ -1,14 +1,23 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
+import com.example.eco_map.api.exception.CityNotFoundException;
 import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
+import com.example.eco_map.api.exception.NatureReserveNotFoundException;
+import com.example.eco_map.api.exception.NatureReserveUpdateException;
+import com.example.eco_map.api.exception.ObservationPointUpdateException;
+import com.example.eco_map.api.exception.RadiationDataUpdateException;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.RoleNotFoundException;
+import com.example.eco_map.api.exception.SoilDataNotFoundException;
+import com.example.eco_map.api.exception.SoilDataUpdateException;
 import com.example.eco_map.api.exception.UserAlreadyExistsException;
 import com.example.eco_map.api.exception.UserNotFoundException;
+import com.example.eco_map.api.exception.WaterDataNotFoundException;
+import com.example.eco_map.api.exception.WaterDataUpdateException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -124,6 +133,69 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleAccessDeniedException(AccessDeniedException ex) {
         log.error("Caught AccessDeniedException", ex);
         return buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage());
+    }
+
+    @ExceptionHandler(SoilDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleSoilDataUpdateException(SoilDataUpdateException ex) {
+        log.error("Caught SoilDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(WaterDataNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleWaterDataNotFoundException(WaterDataNotFoundException ex) {
+        log.error("Caught WaterDataNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(WaterDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleWaterDataUpdateException(WaterDataUpdateException ex) {
+        log.error("Caught WaterDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(SoilDataNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleSoilDataNotFoundException(SoilDataNotFoundException ex) {
+        log.error("Caught SoilDataNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(RadiationDataUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleRadiationDataUpdateException(RadiationDataUpdateException ex) {
+        log.error("Caught RadiationDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(NatureReserveNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleNatureReserveNotFoundException(NatureReserveNotFoundException ex) {
+        log.error("Caught NatureReserveNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(NatureReserveUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleNatureReserveUpdateException(NatureReserveUpdateException ex) {
+        log.error("Caught NatureReserveUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(CityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCityNotFoundException(CityNotFoundException ex) {
+        log.error("Caught CityNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ObservationPointUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleObservationPointUpdateException(ObservationPointUpdateException ex) {
+        log.error("Caught ObservationPointUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

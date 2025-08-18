@@ -5,6 +5,7 @@ import com.example.eco_map.persistence.model.ObservationPoint;
 import com.example.eco_map.persistence.model.RadiationData;
 import com.example.eco_map.persistence.repository.ObservationPointRepository;
 import com.example.eco_map.persistence.repository.RadiationDataRepository;
+import com.example.eco_map.util.GeometryUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -23,23 +24,23 @@ public class RadiationDataImporter extends AbstractCsvImporter<RadiationData> {
     private static final Integer BETA_FALLOUT_INDEX = 3;
     private static final Integer OBSERVATION_POINT_NAME = 0;
     private final PathProperties pathProperties;
-    private final GeometryFactory geometryFactory;
     private final AssignationService assignationService;
     private final ObservationPointRepository observationPointRepository;
     private final RadiationDataRepository radiationDataRepository;
+    private final GeometryUtils geometryUtils;
 
     public RadiationDataImporter(ResourceLoader resourceLoader,
                                  PathProperties pathProperties,
-                                 GeometryFactory geometryFactory,
                                  AssignationService assignationService,
                                  ObservationPointRepository observationPointRepository,
-                                 RadiationDataRepository radiationDataRepository) {
+                                 RadiationDataRepository radiationDataRepository,
+                                 GeometryUtils geometryUtils) {
         super(resourceLoader);
         this.pathProperties = pathProperties;
-        this.geometryFactory = geometryFactory;
         this.assignationService = assignationService;
         this.observationPointRepository = observationPointRepository;
         this.radiationDataRepository = radiationDataRepository;
+        this.geometryUtils = geometryUtils;
     }
 
     public void importRadiationData() {
@@ -50,7 +51,7 @@ public class RadiationDataImporter extends AbstractCsvImporter<RadiationData> {
         double lat = Double.parseDouble(line[LAT_INDEX]);
         double lon = Double.parseDouble(line[LON_INDEX]);
         String name = line[OBSERVATION_POINT_NAME];
-        Point coordinates = geometryFactory.createPoint(new Coordinate(lon, lat));
+        Point coordinates = geometryUtils.createPoint(lon, lat);
         ObservationPoint point = new ObservationPoint();
         point.setName(name);
         point.setCoordinates(coordinates);

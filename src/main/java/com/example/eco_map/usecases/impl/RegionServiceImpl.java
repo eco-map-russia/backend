@@ -5,10 +5,13 @@ import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.repository.RegionRepository;
 import com.example.eco_map.usecases.RegionDetailsAggregator;
 import com.example.eco_map.usecases.RegionService;
+import com.example.eco_map.usecases.dto.PageRegionResponseDto;
 import com.example.eco_map.usecases.dto.RegionDetailsDto;
 import com.example.eco_map.usecases.dto.RegionResponseDto;
+import com.example.eco_map.usecases.mapper.PageMapper;
 import com.example.eco_map.usecases.mapper.RegionMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
@@ -25,7 +28,7 @@ public class RegionServiceImpl implements RegionService {
     private final RegionMapper regionMapper;
     private final Scheduler jdbcScheduler;
     private final RegionDetailsAggregator regionDetailsAggregator;
-
+    private final PageMapper pageMapper;
 
     @Override
     public Flux<RegionResponseDto> getAllRegions() {
@@ -48,5 +51,13 @@ public class RegionServiceImpl implements RegionService {
     @Transactional
     public void saveRegion(Region region) {
         regionRepository.save(region);
+    }
+
+    @Override
+    public Mono<PageRegionResponseDto> getAllRegions(Pageable pageable) {
+        return Mono.fromCallable(() -> regionRepository
+                        .findAllWithoutCoordinates(pageable)
+                ).subscribeOn(jdbcScheduler)
+                .map(pageMapper::mapToPageRegionResponse);
     }
 }
