@@ -4,6 +4,8 @@ import com.example.eco_map.api.exception.AirQualityNotFoundException;
 import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
+import com.example.eco_map.api.exception.NatureReserveNotFoundException;
+import com.example.eco_map.api.exception.NatureReserveUpdateException;
 import com.example.eco_map.api.exception.RadiationDataUpdateException;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
@@ -163,6 +165,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleRadiationDataUpdateException(RadiationDataUpdateException ex) {
         log.error("Caught RadiationDataUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(NatureReserveNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleNatureReserveNotFoundException(NatureReserveNotFoundException ex) {
+        log.error("Caught NatureReserveNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(NatureReserveUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleNatureReserveUpdateException(NatureReserveUpdateException ex) {
+        log.error("Caught NatureReserveUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 

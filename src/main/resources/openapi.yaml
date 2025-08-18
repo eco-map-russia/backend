@@ -285,6 +285,120 @@ paths:
           description: Успешное удаление. Тело ответа отсутствует.
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /api/v1/admin/nature-reserve:
+    post:
+      tags:
+        - AdminNatureReserve
+      summary: Добавить заповедник
+      operationId: addNatureReserve
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NatureReserveRequestDto'
+      responses:
+        '201':
+          description: Заповедник успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NatureReserveResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    get:
+      tags:
+        - AdminNatureReserve
+      summary: Получить список заповедников
+      operationId: getNatureReserves
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список заповедников
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageNatureReserveResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/admin/nature-reserve/{id}:
+    put:
+      tags:
+        - AdminNatureReserve
+      summary: Обновить заповедник
+      operationId: updateNatureReserve
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID заповедника для обновления
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateNatureReserveRequestDto'
+      responses:
+        '200':
+          description: Заповедник успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NatureReserveResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - AdminNatureReserve
+      summary: Удалить заповедник
+      operationId: deleteNatureReserve
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID заповедника для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Успешное удаление. Тело ответа отсутствует.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /api/v1/admin/radiation:
     post:
       tags:
@@ -1513,7 +1627,96 @@ components:
           type: boolean
         empty:
           type: boolean
+    NatureReserveRequestDto:
+      type: object
+      required:
+        - name
+        - regionId
+      properties:
+        name:
+          type: string
+        regionId:
+          type: string
+          format: uuid
+        area:
+          type: number
+          format: double
+        yearFounded:
+          type: integer
+        description:
+          type: string
+        website:
+          type: string
 
+    NatureReserveResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        regionId:
+          type: string
+          format: uuid
+        regionName:
+          type: string
+        area:
+          type: number
+          format: double
+        yearFounded:
+          type: integer
+        description:
+          type: string
+        website:
+          type: string
+
+    UpdateNatureReserveRequestDto:
+      type: object
+      required:
+        - id
+        - name
+        - regionId
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        regionId:
+          type: string
+          format: uuid
+        area:
+          type: number
+          format: double
+        yearFounded:
+          type: integer
+        description:
+          type: string
+        website:
+          type: string
+
+    PageNatureReserveResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/NatureReserveResponseDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
     ErrorResponse:
       type: object
       properties:
