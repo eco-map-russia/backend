@@ -3,9 +3,11 @@ package com.example.eco_map.usecases.mapper;
 import com.example.eco_map.usecases.dto.CommentResponseDto;
 import com.example.eco_map.usecases.dto.FavoriteRegionResponseDto;
 import com.example.eco_map.usecases.dto.NatureReserveResponseDto;
+import com.example.eco_map.usecases.dto.ObservationPointResponseDto;
 import com.example.eco_map.usecases.dto.PageCommentResponseDto;
 import com.example.eco_map.usecases.dto.PageFavoriteRegionResponseDto;
 import com.example.eco_map.usecases.dto.PageNatureReserveResponseDto;
+import com.example.eco_map.usecases.dto.PageObservationPointResponseDto;
 import com.example.eco_map.usecases.dto.PageRadiationDataResponseDto;
 import com.example.eco_map.usecases.dto.PageSoilDataResponseDto;
 import com.example.eco_map.usecases.dto.PageWaterDataResponseDto;
@@ -78,4 +80,14 @@ public interface PageMapper {
     @Mapping(target = "last", source = "page.last")
     @Mapping(target = "empty", source = "page.empty")
     PageNatureReserveResponseDto mapToPageNatureReserveResponses(Page<NatureReserveResponseDto> page);
+
+    @Mapping(target = "content", source = "page.content")
+    @Mapping(target = "number", source = "page.number")
+    @Mapping(target = "size", source = "page.size")
+    @Mapping(target = "totalElements", source = "page.totalElements")
+    @Mapping(target = "totalPages", source = "page.totalPages")
+    @Mapping(target = "first", source = "page.first")
+    @Mapping(target = "last", source = "page.last")
+    @Mapping(target = "empty", source = "page.empty")
+    PageObservationPointResponseDto mapToPageObservationPointResponse(Page<ObservationPointResponseDto> page);
 }

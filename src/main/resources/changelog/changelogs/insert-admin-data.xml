@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <changeSet id="insert-admin" author="i.shinova">
+        <insert tableName="users">
+            <column name="id" value="bf1ba2bc-38d3-436c-9b6a-428dd651c5f9"/>
+            <column name="email" value="admin@ecomap.com"/>
+            <column name="first_name" value="Админ"/>
+            <column name="last_name" value="Админ"/>
+            <column name="password_hash" value="$2a$10$/YwcMfUnz/5a2x39wCWk6OhG4MhD.Jaz/0sq4edAFNrm0TyrHdwFC"/>
+            <column name="phone" value="+7 999 999 99 99"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+        <insert tableName="user_roles">
+            <column name="id" value="d1dd8413-67f6-4d57-b56d-ef3512bda190"/>
+            <column name="user_id" value="bf1ba2bc-38d3-436c-9b6a-428dd651c5f9"/>
+            <column name="role_id" value="e5a5d12c-04e3-4787-a715-2d91e23b890d"/>
+            <column name="created_at" valueDate="now()"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

@@ -1,11 +1,13 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
+import com.example.eco_map.api.exception.CityNotFoundException;
 import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
 import com.example.eco_map.api.exception.NatureReserveNotFoundException;
 import com.example.eco_map.api.exception.NatureReserveUpdateException;
+import com.example.eco_map.api.exception.ObservationPointUpdateException;
 import com.example.eco_map.api.exception.RadiationDataUpdateException;
 import com.example.eco_map.api.exception.RadiationNotFoundException;
 import com.example.eco_map.api.exception.RegionNotFoundException;
@@ -179,6 +181,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleNatureReserveUpdateException(NatureReserveUpdateException ex) {
         log.error("Caught NatureReserveUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(CityNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCityNotFoundException(CityNotFoundException ex) {
+        log.error("Caught CityNotFoundException", ex);
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(ObservationPointUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleObservationPointUpdateException(ObservationPointUpdateException ex) {
+        log.error("Caught ObservationPointUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
