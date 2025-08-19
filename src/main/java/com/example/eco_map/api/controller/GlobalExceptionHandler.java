@@ -30,8 +30,7 @@ import reactor.core.publisher.Mono;
 import java.nio.file.AccessDeniedException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -65,11 +64,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleWebExchangeBindException(WebExchangeBindException ex) {
         log.warn("Validation failed: {}", ex.getMessage());
-        Map<String, String> errors = new HashMap<>();
-        ex.getFieldErrors().forEach(fieldError ->
-                errors.put(fieldError.getField(), fieldError.getDefaultMessage())
-        );
-        return buildErrorResponse(HttpStatus.BAD_REQUEST, errors.toString());
+        String errorMessage = ex.getFieldErrors().stream()
+                .map(fieldError -> fieldError.getField() + ": " + fieldError.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, errorMessage);
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
