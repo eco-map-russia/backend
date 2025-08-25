@@ -347,5 +347,36 @@
                 referencedTableName="regions"
                 referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="create-table-cleanup-events" author="i.shinova">
+        <createTable tableName="cleanup_events">
+            <column name="id" type="uuid">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="city_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="location" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="organizer" type="text"/>
+
+            <column name="event_date" type="date">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="participants_expected" type="int"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="add-fk-cleanup-events-city" author="i.shinova">
+        <addForeignKeyConstraint
+                baseTableName="cleanup_events"
+                baseColumnNames="city_id"
+                constraintName="fk-cleanup_events-city"
+                referencedTableName="cities"
+                referencedColumnNames="id"/>
+    </changeSet>
 
 </databaseChangeLog>

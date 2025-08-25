@@ -1141,7 +1141,33 @@ paths:
           $ref: '#/components/responses/IllegalArgumentException'
         '401':
           $ref: '#/components/responses/Unauthorized'
-
+  /cleanup-events/{id}:
+    get:
+      tags:
+        - EnvData
+      operationId: getCleanupEventDetails
+      summary: Детали субботника
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID события
+      responses:
+        '200':
+          description: Детальная информация о событии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanupEventDetailsDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 components:
   securitySchemes:
     bearerAuth:
@@ -2045,6 +2071,60 @@ components:
           type: boolean
         empty:
           type: boolean
+
+    CleanupEventMapPointDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cityName:
+          type: string
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+    CleanupEventMapDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cityName:
+          type: string
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+    CleanupEventDetailsDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        organizer:
+          type: string
+        description:
+          type: string
+        participantsExpected:
+          type: integer
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
     ErrorResponse:
       type: object
       properties:

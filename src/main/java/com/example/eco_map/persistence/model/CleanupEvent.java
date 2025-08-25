@@ -1,7 +1,6 @@
 package com.example.eco_map.persistence.model;
 
-import com.example.eco_map.usecases.dto.LocationSearchDto;
-import jakarta.persistence.CascadeType;
+import com.example.eco_map.usecases.dto.CleanupEventMapPointDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.ColumnResult;
 import jakarta.persistence.ConstructorResult;
@@ -12,7 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.NamedNativeQuery;
 import jakarta.persistence.SqlResultSetMapping;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -21,53 +20,74 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 
+@NamedNativeQuery(
+        name = "CleanupEvent.mapDto",
+        query = """
+                  SELECT ce.id AS id,
+                         c.name AS cityName,
+                         ce.location AS location,
+                         ce.event_date AS date,
+                         ST_Y(c.center) AS lat,
+                         ST_X(c.center) AS lon
+                  FROM cleanup_events ce
+                  JOIN cities c ON ce.city_id = c.id
+                """,
+        resultSetMapping = "CleanupEventMapDtoMapping"
+)
 @SqlResultSetMapping(
-        name = "LocationSearchDtoMapping",
+        name = "CleanupEventMapDtoMapping",
         classes = @ConstructorResult(
-                targetClass = LocationSearchDto.class,
+                targetClass = CleanupEventMapPointDto.class,
                 columns = {
-                        @ColumnResult(name = "id", type = UUID.class),
-                        @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "lat", type = BigDecimal.class),
-                        @ColumnResult(name = "lon", type = BigDecimal.class)
+                        @ColumnResult(name = "id", type = java.util.UUID.class),
+                        @ColumnResult(name = "cityName", type = String.class),
+                        @ColumnResult(name = "location", type = String.class),
+                        @ColumnResult(name = "date", type = java.time.LocalDate.class),
+                        @ColumnResult(name = "lat", type = Double.class),
+                        @ColumnResult(name = "lon", type = Double.class)
                 }
         )
 )
-@Table(name = "cities")
+
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
+@Table(name = "cleanup_events")
 @Getter
 @Setter
-@ToString(exclude = {"points", "region", "cleanupEvents"})
-public class City {
+@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+public class CleanupEvent {
+
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id", updatable = false, nullable = false)
     private UUID id;
-    @Column(name = "name", nullable = false)
-    private String name;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
-    private Region region;
-    @Column(name = "center", columnDefinition = "geometry(Point, 4326)", nullable = false)
-    private Point center;
-    @Column(name = "geom", columnDefinition = "geometry(Polygon, 4326)", nullable = false)
-    private Polygon geom;
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL)
-    private List<ObservationPoint> points = new ArrayList<>();
-    @OneToMany(mappedBy = "city", cascade = CascadeType.ALL)
-    private List<CleanupEvent> cleanupEvents = new ArrayList<>();
+    @JoinColumn(name = "city_id", nullable = false, updatable = false)
+    private City city;
+
+    @Column(name = "location", nullable = false)
+    private String location;
+
+    @Column(name = "event_date", nullable = false)
+    private LocalDate date;
+
+    @Column(name = "organizer")
+    private String organizer;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "participants_expected")
+    private Integer participantsExpected;
+
     @CreatedDate
     @Column(name = "created_at", updatable = false, nullable = false)
     private LocalDateTime createdAt;
@@ -87,7 +107,7 @@ public class City {
 
         if (!thisEffectiveClass.equals(oEffectiveClass)) return false;
 
-        City that = (City) o;
+        CleanupEvent that = (CleanupEvent) o;
 
         return getId() != null && getId().equals(that.getId());
     }

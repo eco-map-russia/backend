@@ -7,7 +7,8 @@ public enum MapLayerType {
     SOIL("soil"),
     WATER("water"),
     AIR("air"),
-    RADIATION("radiation");
+    RADIATION("radiation"),
+    CLEANUP_EVENTS("cleanup-events");
     private final String value;
 
     MapLayerType(String value) {

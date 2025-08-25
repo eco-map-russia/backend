@@ -25,6 +25,7 @@ public class DataInitializer implements CommandLineRunner {
     private final ObservationPointImporter observationPointImporter;
     private final RadiationDataImporter radiationDataImporter;
     private final NatureReservesImporter natureReservesImporter;
+    private final CleanupEventImporter cleanupEventImporter;
 
     @Override
     public void run(String... args) {
@@ -53,6 +54,8 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Importing nature reserves...");
             natureReservesImporter.importNatureReserves();
 
+            log.info("Importing cleanup events...");
+            cleanupEventImporter.importCleanupEvent();
         } catch (Exception e) {
             log.error("Failed during initialization", e);
         }

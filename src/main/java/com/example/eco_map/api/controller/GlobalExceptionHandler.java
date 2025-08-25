@@ -2,6 +2,7 @@ package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.AirQualityNotFoundException;
 import com.example.eco_map.api.exception.CityNotFoundException;
+import com.example.eco_map.api.exception.CleanupEventNotFoundException;
 import com.example.eco_map.api.exception.CommentNotFoundException;
 import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
 import com.example.eco_map.api.exception.ErrorResponse;
@@ -195,6 +196,13 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleObservationPointUpdateException(ObservationPointUpdateException ex) {
         log.error("Caught ObservationPointUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(CleanupEventNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCleanupEventNotFoundException(CleanupEventNotFoundException ex) {
+        log.warn("Caught CleanupEventNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

@@ -2,10 +2,12 @@ package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.EnvDataApi;
 import com.example.eco_map.api.strategy.MapLayerStrategyResolver;
+import com.example.eco_map.usecases.CleanupService;
 import com.example.eco_map.usecases.ObservationPointService;
 import com.example.eco_map.usecases.RegionService;
 import com.example.eco_map.usecases.SearchService;
 import com.example.eco_map.usecases.dto.AirQualityObservationDto;
+import com.example.eco_map.usecases.dto.CleanupEventDetailsDto;
 import com.example.eco_map.usecases.dto.LocationSearchDto;
 import com.example.eco_map.usecases.dto.RadiationDataObservationDto;
 import com.example.eco_map.usecases.dto.RegionDetailsDto;
@@ -32,6 +34,7 @@ public class EnvDataController implements EnvDataApi {
     private final ObservationPointService observationPointService;
     private final SearchService searchService;
     private final MapLayerStrategyResolver resolver;
+    private final CleanupService cleanupService;
 
     @Override
     @GetMapping("/regions")
@@ -78,5 +81,13 @@ public class EnvDataController implements EnvDataApi {
     public Mono<ResponseEntity<Flux<LocationSearchDto>>> searchLocation(@RequestParam String query,
                                                                         ServerWebExchange exchange) {
         return Mono.defer(() -> Mono.just(ResponseEntity.ok(searchService.searchCityOrRegionByName(query))));
+    }
+
+    @Override
+    @GetMapping("/cleanup-events/{id}")
+    public Mono<ResponseEntity<CleanupEventDetailsDto>> getCleanupEventDetails(
+            @PathVariable UUID id, ServerWebExchange exchange) {
+        return cleanupService.getDetails(id)
+                .map(ResponseEntity::ok);
     }
 }
