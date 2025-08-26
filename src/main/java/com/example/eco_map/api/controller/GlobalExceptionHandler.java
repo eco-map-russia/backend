@@ -1,6 +1,8 @@
 package com.example.eco_map.api.controller;
 
 import com.example.eco_map.api.exception.*;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -192,6 +194,19 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleCleanupEventUpdateException(CleanupEventUpdateException ex) {
         log.error("Caught CleanupEventUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleConstraintViolationException(ConstraintViolationException ex) {
+        log.error("Caught ConstraintViolationException", ex);
+
+        String message = ex.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .distinct()
+                .collect(Collectors.joining("; "));
+
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {

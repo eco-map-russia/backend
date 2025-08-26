@@ -1029,16 +1029,25 @@ paths:
       parameters:
         - name: lat
           in: query
-          required: true
+          description: Широта
           schema:
             type: number
             format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле широта обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -90, message = "Широта не может быть меньше -90")
+            @jakarta.validation.constraints.Max(value = 90, message = "Широта не может быть больше 90")
         - name: lon
           in: query
-          required: true
+          description: Долгота
           schema:
             type: number
             format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле долгота обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -180, message = "Долгота не может быть меньше -180")
+            @jakarta.validation.constraints.Max(value = 180, message = "Долгота не может быть больше 180")    
+
       responses:
         '200':
           description: Актуальные данные по воздуху
