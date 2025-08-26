@@ -28,7 +28,7 @@ import:
   soil-pollution-data-file: classpath:data/soil_pollution_data.csv
   radiation-data-file: classpath:data/radiation.csv
   nature-reserve-file: classpath:data/nature-reserve.csv
-
+  cleanup-events-file: classpath:data/cleanup-events.csv
 spring:
   application:
     name: eco-map

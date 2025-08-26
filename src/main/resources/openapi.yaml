@@ -1141,7 +1141,147 @@ paths:
           $ref: '#/components/responses/IllegalArgumentException'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /cleanup-events/{id}:
+    get:
+      tags:
+        - EnvData
+      operationId: getCleanupEventDetails
+      summary: Детали субботника
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: ID события
+      responses:
+        '200':
+          description: Детальная информация о событии
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanupEventDetailsDto'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/v1/cleanup-events:
+    post:
+      tags:
+        - AdminCleanupEvent
+      summary: Добавить субботник
+      operationId: addCleanupEvent
+      security:
+        - bearerAuth: [ ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CleanupEventCreateRequestDto'
+      responses:
+        '201':
+          description: Субботник успешно добавлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanupEventResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
 
+    get:
+      tags:
+        - AdminCleanupEvent
+      summary: Получить список субботников
+      operationId: getCleanupEvents
+      parameters:
+        - name: page
+          in: query
+          description: Номер страницы
+          required: false
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+        - name: size
+          in: query
+          description: Кол-во элементов на странице
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 10
+      responses:
+        '200':
+          description: Список субботников
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PageCleanupEventResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /api/v1/cleanup-events/{id}:
+    put:
+      tags:
+        - AdminCleanupEvent
+      summary: Обновить субботник
+      operationId: updateCleanupEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID субботника для обновления
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CleanupEventUpdateDto'
+      responses:
+        '200':
+          description: Субботник успешно обновлён
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CleanupEventResponseDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      tags:
+        - AdminCleanupEvent
+      summary: Удалить субботник
+      operationId: deleteCleanupEvent
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID субботника для удаления
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '204':
+          description: Успешное удаление. Тело ответа отсутствует.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     bearerAuth:
@@ -2031,6 +2171,149 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/RegionDto'
+        number:
+          type: integer
+        size:
+          type: integer
+        totalElements:
+          type: integer
+        totalPages:
+          type: integer
+        first:
+          type: boolean
+        last:
+          type: boolean
+        empty:
+          type: boolean
+
+    CleanupEventMapPointDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cityName:
+          type: string
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        lat:
+          type: number
+          format: double
+        lon:
+          type: number
+          format: double
+    CleanupEventMapDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        cityName:
+          type: string
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+    CleanupEventDetailsDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        location:
+          type: string
+        date:
+          type: string
+          format: date
+        organizer:
+          type: string
+        description:
+          type: string
+        participantsExpected:
+          type: integer
+        coordinatesResponseDto:
+          $ref: '#/components/schemas/CoordinatesResponseDto'
+    CleanupEventCreateRequestDto:
+      type: object
+      required:
+        - location
+        - cityId
+        - date
+      properties:
+        location:
+          type: string
+        cityId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        organizer:
+          type: string
+        description:
+          type: string
+        participantsExpected:
+          type: integer
+    CleanupEventResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        location:
+          type: string
+        cityId:
+          type: string
+          format: uuid
+        cityName:
+          type: string
+        date:
+          type: string
+          format: date
+        organizer:
+          type: string
+        description:
+          type: string
+        participantsExpected:
+          type: integer
+    CleanupEventUpdateDto:
+      type: object
+      required:
+        - id
+        - location
+        - cityId
+        - date
+      properties:
+        id:
+          type: string
+          format: uuid
+        location:
+          type: string
+        cityId:
+          type: string
+          format: uuid
+        date:
+          type: string
+          format: date
+        organizer:
+          type: string
+        description:
+          type: string
+        participantsExpected:
+          type: integer
+    PageCleanupEventResponseDto:
+      type: object
+      properties:
+        content:
+          type: array
+          items:
+            $ref: '#/components/schemas/CleanupEventResponseDto'
         number:
           type: integer
         size:

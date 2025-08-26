@@ -1,23 +1,6 @@
 package com.example.eco_map.api.controller;
 
-import com.example.eco_map.api.exception.AirQualityNotFoundException;
-import com.example.eco_map.api.exception.CityNotFoundException;
-import com.example.eco_map.api.exception.CommentNotFoundException;
-import com.example.eco_map.api.exception.DuplicateFavoriteRegionException;
-import com.example.eco_map.api.exception.ErrorResponse;
-import com.example.eco_map.api.exception.NatureReserveNotFoundException;
-import com.example.eco_map.api.exception.NatureReserveUpdateException;
-import com.example.eco_map.api.exception.ObservationPointUpdateException;
-import com.example.eco_map.api.exception.RadiationDataUpdateException;
-import com.example.eco_map.api.exception.RadiationNotFoundException;
-import com.example.eco_map.api.exception.RegionNotFoundException;
-import com.example.eco_map.api.exception.RoleNotFoundException;
-import com.example.eco_map.api.exception.SoilDataNotFoundException;
-import com.example.eco_map.api.exception.SoilDataUpdateException;
-import com.example.eco_map.api.exception.UserAlreadyExistsException;
-import com.example.eco_map.api.exception.UserNotFoundException;
-import com.example.eco_map.api.exception.WaterDataNotFoundException;
-import com.example.eco_map.api.exception.WaterDataUpdateException;
+import com.example.eco_map.api.exception.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -194,6 +177,20 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Mono<ErrorResponse> handleObservationPointUpdateException(ObservationPointUpdateException ex) {
         log.error("Caught ObservationPointUpdateException", ex);
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
+    }
+
+    @ExceptionHandler(CleanupEventNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public Mono<ErrorResponse> handleCleanupEventNotFoundException(CleanupEventNotFoundException ex) {
+        log.warn("Caught CleanupEventNotFoundException: {}", ex.getMessage());
+        return buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
+    @ExceptionHandler(CleanupEventUpdateException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleCleanupEventUpdateException(CleanupEventUpdateException ex) {
+        log.error("Caught CleanupEventUpdateException", ex);
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
