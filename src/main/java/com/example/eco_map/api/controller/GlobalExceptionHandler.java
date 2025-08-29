@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.support.WebExchangeBindException;
+import org.springframework.web.server.MissingRequestValueException;
 import reactor.core.publisher.Mono;
 
 import java.nio.file.AccessDeniedException;
@@ -208,6 +209,17 @@ public class GlobalExceptionHandler {
 
         return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
     }
+
+    @ExceptionHandler(MissingRequestValueException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Mono<ErrorResponse> handleMissingRequestValueException(MissingRequestValueException ex) {
+        log.error("Caught MissingRequestValueException", ex);
+
+        String message = "Required query parameter is missing: " + ex.getName();
+
+        return buildErrorResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
 
     private Mono<ErrorResponse> buildErrorResponse(HttpStatus status, String message) {
         return Mono.just(new ErrorResponse(
