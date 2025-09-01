@@ -1073,16 +1073,24 @@ paths:
       parameters:
         - name: lat
           in: query
-          required: true
+          description: Широта
           schema:
             type: number
             format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле широта обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -90, message = "Широта не может быть меньше -90")
+            @jakarta.validation.constraints.Max(value = 90, message = "Широта не может быть больше 90")
         - name: lon
           in: query
-          required: true
+          description: Долгота
           schema:
             type: number
             format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле долгота обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -180, message = "Долгота не может быть меньше -180")
+            @jakarta.validation.constraints.Max(value = 180, message = "Долгота не может быть больше 180")
       responses:
         '200':
           description: Актуальные радиоактивные данные
@@ -1108,9 +1116,9 @@ paths:
       parameters:
         - name: query
           in: query
-          required: true
           schema:
             type: string
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "Ввод не может быть null")'
       responses:
         '200':
           description: Результаты поиска по координатам
@@ -1488,15 +1496,17 @@ components:
           type: string
           x-field-extra-annotation: |
             @jakarta.validation.constraints.NotBlank(message = "Имя обязательно для заполнения")
+            @jakarta.validation.constraints.Size(min = 2, max = 50, message = "Имя должно содержать от 2 до 50 символов")
             @jakarta.validation.constraints.Pattern(regexp = "^[А-Яа-яA-Za-z]+$", message = "Имя должно содержать только буквы")
         lastName:
           type: string
           x-field-extra-annotation: |
             @jakarta.validation.constraints.NotBlank(message = "Фамилия обязательна для заполнения")
+             @jakarta.validation.constraints.Size(min = 2, max = 50, message = "Фамилия должна содержать от 2 до 50 символов")
             @jakarta.validation.constraints.Pattern(regexp = "^[А-Яа-яA-Za-z]+$", message = "Фамилия должна содержать только буквы")
         phone:
           type: string
-          x-field-extra-annotation: '@jakarta.validation.constraints.Pattern(regexp = "^\\+?[0-9\\-\\s()]{7,15}$", message = "Телефон должен быть корректным")'
+          x-field-extra-annotation: '@jakarta.validation.constraints.Pattern(regexp = "^\\+?[0-9\\-\\s()]{7,15}$", message = "Номер телефона должен быть в формате от 7 до 15 цифр, может включать +, пробелы, тире или скобки")'
           example: "+7 999 123-45-67"
 
     RegistrationResponseDto:
@@ -1614,14 +1624,11 @@ components:
           type: number
     CreateCommentRequestDto:
       type: object
-      required:
-        - text
       properties:
         text:
           type: string
-          minLength: 1
           description: Текст комментария
-          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Комментарий не должен быть пустым")'
     CommentResponseDto:
       type: object
       properties:
@@ -1656,10 +1663,7 @@ components:
       properties:
         text:
           type: string
-          minLength: 1
-          maxLength: 1000
-      required:
-        - text
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Комментарий не должен быть пустым")'
     PageCommentResponseDto:
       type: object
       properties:
@@ -1725,20 +1729,32 @@ components:
       properties:
         firstName:
           type: string
-          minLength: 2
-          maxLength: 50
-          pattern: "^[А-Яа-яA-Za-z]+$"
-          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotBlank(message = "Имя не должно быть пустым")
+            @jakarta.validation.constraints.Size(min = 2, max = 50, message = "Имя должно содержать от 2 до 50 символов")
+            @jakarta.validation.constraints.Pattern(
+              regexp = "^[А-Яа-яA-Za-z]+$",
+              message = "Имя должно содержать только буквы"
+            )
+
         lastName:
           type: string
-          minLength: 2
-          maxLength: 50
-          pattern: "^[А-Яа-яA-Za-z]+$"
-          x-field-extra-annotation: "@jakarta.validation.constraints.NotBlank"
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotBlank(message = "Фамилия не должна быть пустой")
+            @jakarta.validation.constraints.Size(min = 2, max = 50, message = "Фамилия должна содержать от 2 до 50 символов")
+            @jakarta.validation.constraints.Pattern(
+              regexp = "^[А-Яа-яA-Za-z]+$",
+              message = "Фамилия должна содержать только буквы"
+            )
+
         phone:
           type: string
-          pattern: "^\\+?[0-9\\-\\s()]{7,15}$"
           example: "+7 999 123-45-67"
+          x-field-extra-annotation: >
+            @jakarta.validation.constraints.Pattern(
+              regexp = "^\\+?[0-9\\-\\s()]{7,15}$",
+              message = "Номер телефона должен быть в формате от 7 до 15 цифр, может включать +, пробелы, тире или скобки"
+            )
     FavoriteRegionResponseDto:
       type: object
       properties:
@@ -1756,18 +1772,26 @@ components:
         - $ref: '#/components/schemas/UserDto'
     SoilDataRequestDto:
       type: object
-      required:
-        - regionId
       properties:
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         chronicSoilPollutionPercent:
           type: number
           format: double
+          description: Процент хронического загрязнения почвы
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "-100.0", inclusive = true, message = "Значение не может быть меньше -100")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Значение не может быть больше 100")
         landDegradationNeutralityIndex:
           type: number
           format: double
+          description: Индекс нейтральности деградации
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "-100.0", inclusive = true, message = "Значение не может быть меньше -100")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Значение не может быть больше 100")
+
     SoilDataResponseDto:
       type: object
       properties:
@@ -1810,22 +1834,30 @@ components:
           type: boolean
     UpdateSoilDataRequestDto:
       type: object
-      required:
-        - id
-        - regionId
       properties:
         id:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID не должен быть null")'
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         chronicSoilPollutionPercent:
           type: number
           format: double
+          description: Процент хронического загрязнения почвы
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "-100.0", inclusive = true, message = "Значение не может быть меньше -100")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Значение не может быть больше 100")
         landDegradationNeutralityIndex:
           type: number
           format: double
+          description: Индекс нейтральности деградации
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "-100.0", inclusive = true, message = "Значение не может быть меньше -100")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Значение не может быть больше 100")
+
     WaterDataResponseDto:
       type: object
       properties:
@@ -1843,32 +1875,40 @@ components:
 
     WaterDataRequestDto:
       type: object
-      required:
-        - regionId
       properties:
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         dirtySurfaceWaterPercent:
           type: number
           format: double
+          description: Процент загрязнённых поверхностных вод
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "0.0", inclusive = true, message = "Процент загрязнённой воды не может быть меньше 0")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Процент загрязнённой воды не может превышать 100")
 
     UpdateWaterDataRequestDto:
       type: object
       required:
         - id
         - regionId
-        - dirtySurfaceWaterPercent
       properties:
         id:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID не должен быть null")'
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         dirtySurfaceWaterPercent:
           type: number
           format: double
+          description: Процент загрязнённых поверхностных вод
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.DecimalMin(value = "0.0", inclusive = true, message = "Процент загрязнённой воды не может быть меньше 0")
+            @jakarta.validation.constraints.DecimalMax(value = "100.0", inclusive = true, message = "Процент загрязнённой воды не может превышать 100")
 
     PageWaterDataResponseDto:
       type: object
@@ -1893,33 +1933,34 @@ components:
           type: boolean
     RadiationDataRequestDto:
       type: object
-      required:
-        - pointId
-        - betaFallout
       properties:
         pointId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID точки наблюдения не должен быть null")'
         betaFallout:
           type: number
           format: double
+          description: Уровень бета-излучения
+          x-field-extra-annotation: '@jakarta.validation.constraints.DecimalMin(value="0.0", message = "Уровень бета-излучения не может быть отрицательным")'
+
 
     UpdateRadiationDataRequestDto:
       type: object
-      required:
-        - id
-        - pointId
-        - betaFallout
       properties:
         id:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID не должен быть null")'
         pointId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID точки наблюдения не должен быть null")'
         betaFallout:
           type: number
           format: double
+          description: Уровень бета-излучения
+          x-field-extra-annotation: '@jakarta.validation.constraints.DecimalMin(value="0.0", message = "Уровень бета-излучения не может быть отрицательным")'
 
     RadiationDataResponseDto:
       type: object
@@ -1961,47 +2002,55 @@ components:
           type: boolean
     ObservationPointRequestDto:
       type: object
-      required:
-        - name
-        - cityId
-        - latitude
-        - longitude
       properties:
         name:
           type: string
         cityId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID города не должен быть null")'
         latitude:
           type: number
           format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле широта обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -90, message = "Широта не может быть меньше -90")
+            @jakarta.validation.constraints.Max(value = 90, message = "Широта не может быть больше 90")
         longitude:
           type: number
           format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле долгота обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -180, message = "Долгота не может быть меньше -180")
+            @jakarta.validation.constraints.Max(value = 180, message = "Долгота не может быть больше 180")   
 
     UpdateObservationPointRequestDto:
       type: object
-      required:
-        - id
-        - name
-        - cityId
-        - latitude
-        - longitude
       properties:
         id:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID не должен быть null")'
         name:
           type: string
         cityId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID города не должен быть null")'
         latitude:
           type: number
           format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле широта обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -90, message = "Широта не может быть меньше -90")
+            @jakarta.validation.constraints.Max(value = 90, message = "Широта не может быть больше 90")
         longitude:
           type: number
           format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле долгота обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -180, message = "Долгота не может быть меньше -180")
+            @jakarta.validation.constraints.Max(value = 180, message = "Долгота не может быть больше 180")   
 
     ObservationPointResponseDto:
       type: object
@@ -2042,15 +2091,14 @@ components:
           type: boolean
     NatureReserveRequestDto:
       type: object
-      required:
-        - name
-        - regionId
       properties:
         name:
           type: string
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Название обязательно для заполнения")'
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         area:
           type: number
           format: double
@@ -2086,19 +2134,18 @@ components:
 
     UpdateNatureReserveRequestDto:
       type: object
-      required:
-        - id
-        - name
-        - regionId
       properties:
         id:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID не должен быть null")'
         name:
           type: string
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Название обязательно для заполнения")'
         regionId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID региона не должен быть null")'
         area:
           type: number
           format: double
@@ -2250,19 +2297,18 @@ components:
           $ref: '#/components/schemas/CoordinatesResponseDto'
     CleanupEventCreateRequestDto:
       type: object
-      required:
-        - location
-        - cityId
-        - date
       properties:
         location:
           type: string
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Место проведения обязательно для заполнения")'
         cityId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID города не должен быть null")'
         date:
           type: string
           format: date
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "Дата обязательна для заполнения")'
         organizer:
           type: string
         description:
@@ -2293,23 +2339,21 @@ components:
           type: integer
     CleanupEventUpdateDto:
       type: object
-      required:
-        - id
-        - location
-        - cityId
-        - date
       properties:
         id:
           type: string
           format: uuid
         location:
           type: string
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotBlank(message = "Место проведения обязательно для заполнения")'
         cityId:
           type: string
           format: uuid
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "ID города не должен быть null")'
         date:
           type: string
           format: date
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "Дата обязательна для заполнения")'
         organizer:
           type: string
         description:
