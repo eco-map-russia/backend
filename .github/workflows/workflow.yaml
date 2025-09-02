@@ -52,13 +52,9 @@ jobs:
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Update docker-compose.yml image tag
-        run: |
-          sed -i "s|image: ${IMAGE_NAME}:latest|image: ${IMAGE_TAG}|" docker-compose.yml
-
       - name: Build Docker image
         run: |
-          docker compose build
+          docker build -t ${IMAGE_TAG} .
 
       - name: Push Docker image
         run: |
