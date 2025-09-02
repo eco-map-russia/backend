@@ -54,7 +54,7 @@ jobs:
 
       - name: Update docker-compose.yml image tag
         run: |
-          sed -i "s|image: ${IMAGE_NAME}:latest|image: ${IMAGE_TAG}|" docker-compose.yaml
+          sed -i "s|image: ${IMAGE_NAME}:latest|image: ${IMAGE_TAG}|" docker-compose.yml
 
       - name: Build Docker image
         run: |
