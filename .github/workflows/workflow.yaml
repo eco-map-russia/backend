@@ -1,19 +1,28 @@
 name: Docker compose & push to GHCR
+
 on:
   push:
     branches:
       - main
+
+env:
+  MAJOR_VERSION: "1"
+  MINOR_VERSION: "0"
+  PATCH_VERSION: "0"
+  IMAGE_NAME: ghcr.io/iraserg/eco-map-app
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up docker buildx
+      - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
       - name: Create .env file
@@ -32,10 +41,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.TOKEN }}
+
+      - name: Set version and image tag
+        run: |
+          VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: Build project
         run: mvn clean package -DskipTests
 
-      - name: Build and push docker image
+      - name: Update docker-compose.yml image tag
+        run: |
+          sed -i "s|image: ${IMAGE_NAME}:latest|image: ${IMAGE_NAME}:${VERSION}|" docker-compose.yaml
+
+      - name: Build Docker image
         run: |
           docker compose build
-          docker compose push
+
+      - name: Push Docker image
+        run: |
+          docker push ${IMAGE_NAME}:${VERSION}
