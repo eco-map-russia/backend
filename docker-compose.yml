@@ -2,7 +2,7 @@ services:
   app:
     env_file:
       - .env
-    build: .
+    image: ghcr.io/iraserg/eco-map-app:${APP_VERSION}
     container_name: eco-map-app
     environment:
       DATABASE_USERNAME: ${DATABASE_USERNAME}
