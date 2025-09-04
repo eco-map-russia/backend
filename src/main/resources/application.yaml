@@ -1,11 +1,11 @@
 server:
-  port: 8080
+  port: 8085
 app:
   data-init:
     enabled: true
 air:
   quality:
-    batch-size: 3
+    batch-size: 20
     base-url: "http://air-quality-api.open-meteo.com/v1/air-quality"
     current-parameters:
       - european_aqi
