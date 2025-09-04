@@ -1324,8 +1324,6 @@ components:
           format: uuid
         name:
           type: string
-        geoJson:
-          type: string
 
     RegionDetailsDto:
       type: object
