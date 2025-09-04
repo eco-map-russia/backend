@@ -9,9 +9,9 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
-@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE, uses = GeometryToGeoJsonMapper.class)
+@Mapper(componentModel = "spring", unmappedTargetPolicy = ReportingPolicy.IGNORE)
 public interface RegionMapper {
-    @Mapping(source = "geom", target = "geoJson", qualifiedByName = "toGeoJson")
+
     RegionResponseDto regionToRegionResponseDto(Region region);
 
     @Mapping(source = "center", target = "lat", qualifiedByName = "pointToXCoordinate")
