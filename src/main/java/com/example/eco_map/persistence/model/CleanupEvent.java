@@ -37,6 +37,7 @@ import java.util.UUID;
                          ST_X(c.center) AS lon
                   FROM cleanup_events ce
                   JOIN cities c ON ce.city_id = c.id
+                WHERE event_date>=CURRENT_DATE
                 """,
         resultSetMapping = "CleanupEventMapDtoMapping"
 )
