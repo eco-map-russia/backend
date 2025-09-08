@@ -49,7 +49,8 @@ public class SecurityConfig {
                         .pathMatchers("/api/v1/auth/**").permitAll()
                         .pathMatchers("/swagger-ui/**").permitAll()
                         .pathMatchers("/v3/api-docs/**").permitAll()
-                        .pathMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .pathMatchers("/actuator/health", "/actuator/info").permitAll()
+                        .pathMatchers("actuator/**").hasRole("ADMIN")
                         .anyExchange().authenticated()
                 )
                 .build();
