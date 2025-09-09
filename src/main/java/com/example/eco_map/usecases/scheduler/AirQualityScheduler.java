@@ -12,11 +12,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
+import reactor.util.retry.Retry;
 
+import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -67,6 +72,14 @@ public class AirQualityScheduler {
                                 data.setObservationPoint(point);
                                 return data;
                             })
+                            .retryWhen(Retry.backoff(3, Duration.ofSeconds(3))
+                                    .filter(e ->
+                                            e instanceof IOException || e instanceof TimeoutException ||
+                                                    (e instanceof WebClientResponseException ex &&
+                                                            (ex.getStatusCode().is5xxServerError() ||
+                                                                    ex.getStatusCode().value() == 429))
+                                    )
+                            )
                             .onErrorResume(e -> {
                                 log.warn("Failed to fetch air quality for {}, {}: {}", lat, lon, e.getMessage());
                                 return Mono.empty();

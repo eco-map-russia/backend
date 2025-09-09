@@ -5,7 +5,7 @@ app:
     enabled: true
 air:
   quality:
-    batch-size: 20
+    batch-size: 3
     base-url: "http://air-quality-api.open-meteo.com/v1/air-quality"
     current-parameters:
       - european_aqi
