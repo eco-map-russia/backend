@@ -5,7 +5,7 @@ app:
     enabled: true
 air:
   quality:
-    batch-size: 20
+    batch-size: 3
     base-url: "http://air-quality-api.open-meteo.com/v1/air-quality"
     current-parameters:
       - european_aqi
@@ -47,9 +47,17 @@ spring:
 logging:
   level:
     root: info
-    com.example.eco_map: debug
-    org.springframework.transaction: DEBUG
-    org.springframework.jdbc.datasource.DataSourceTransactionManager: DEBUG
-    org.springframework.transaction.interceptor: TRACE
+    com.example.eco_map: info
+    org.springframework.transaction: warn
+    org.springframework.jdbc.datasource.DataSourceTransactionManager: warn
+    org.springframework.transaction.interceptor: warn
 JWT_SECRET: ${JWT_SECRET_KEY}
 JWT_EXPIRATION_TIME_MS: 900000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics
+  endpoint:
+    health:
+      show-details: always
