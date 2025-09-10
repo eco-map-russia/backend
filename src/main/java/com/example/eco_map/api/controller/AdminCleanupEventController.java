@@ -27,7 +27,7 @@ import reactor.core.publisher.Mono;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/api/v1/cleanup-events")
+@RequestMapping("/api/v1/admin/cleanup-events")
 @RequiredArgsConstructor
 public class AdminCleanupEventController implements AdminCleanupEventApi {
     private final CleanupService cleanupService;
