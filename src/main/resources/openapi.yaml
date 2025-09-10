@@ -1722,6 +1722,11 @@ components:
         phone:
           type: string
           example: '+1234567890'
+        roles:
+          type: array
+          items:
+            type: string
+
     UserUpdateRequestDto:
       type: object
       properties:
