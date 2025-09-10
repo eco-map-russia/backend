@@ -27,7 +27,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Mono<UserDto> getCurrentUser(UUID id) {
         return Mono.fromCallable(() -> {
-                    User user = userRepository.findById(id)
+                    User user = userRepository.findByIdWithRole(id)
                             .orElseThrow(() -> new UserNotFoundException("User not found: " + id));
                     return user;
                 })
