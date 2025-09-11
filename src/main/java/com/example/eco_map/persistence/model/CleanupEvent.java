@@ -46,10 +46,10 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = CleanupEventMapPointDto.class,
                 columns = {
-                        @ColumnResult(name = "id", type = java.util.UUID.class),
+                        @ColumnResult(name = "id", type = UUID.class),
                         @ColumnResult(name = "cityName", type = String.class),
                         @ColumnResult(name = "location", type = String.class),
-                        @ColumnResult(name = "date", type = java.time.LocalDate.class),
+                        @ColumnResult(name = "date", type = LocalDate.class),
                         @ColumnResult(name = "lat", type = Double.class),
                         @ColumnResult(name = "lon", type = Double.class)
                 }
