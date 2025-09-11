@@ -16,21 +16,24 @@ public class SearchRepositoryImpl implements SearchRepository {
     @Override
     public List<LocationSearchDto> searchByName(String query) {
         String sql = """
-                    SELECT * FROM (
-                        SELECT id, name, 
-                               ST_Y(center::geometry) as lat,
-                               ST_X(center::geometry) as lon 
-                        FROM regions
-                        WHERE LOWER(name) LIKE :q
-                        UNION ALL
-                        SELECT id, name, 
-                               ST_Y(center::geometry) as lat,
-                               ST_X(center::geometry) as lon
-                        FROM cities
-                        WHERE LOWER(name) LIKE :q
-                    ) AS res
-                    ORDER BY name
-                    LIMIT 10
+                     SELECT * FROM (
+                         SELECT id, name, 
+                                ST_Y(center) as lat,
+                                ST_X(center) as lon, 
+                                'region' as type   
+                         FROM regions
+                         WHERE LOWER(name) LIKE :q
+                         UNION ALL
+                         SELECT id, name, 
+                                ST_Y(center) as lat,
+                                ST_X(center) as lon,
+                                'city' as type   
+                
+                         FROM cities
+                         WHERE LOWER(name) LIKE :q
+                     ) AS res
+                     ORDER BY name
+                     LIMIT 10
                 """;
         return entityManager.createNativeQuery(sql, "LocationSearchDtoMapping")
                 .setParameter("q", query.toLowerCase() + "%")

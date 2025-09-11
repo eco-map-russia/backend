@@ -1457,8 +1457,12 @@ components:
           type: string
         lat:
           type: number
+          format: double
         lon:
           type: number
+          format: double
+        type:
+          type: string
 
     AuthRequestDto:
       type: object

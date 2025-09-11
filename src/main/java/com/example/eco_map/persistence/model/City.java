@@ -25,7 +25,6 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,8 +37,9 @@ import java.util.UUID;
                 columns = {
                         @ColumnResult(name = "id", type = UUID.class),
                         @ColumnResult(name = "name", type = String.class),
-                        @ColumnResult(name = "lat", type = BigDecimal.class),
-                        @ColumnResult(name = "lon", type = BigDecimal.class)
+                        @ColumnResult(name = "lat", type = Double.class),
+                        @ColumnResult(name = "lon", type = Double.class),
+                        @ColumnResult(name = "type", type = String.class)
                 }
         )
 )
