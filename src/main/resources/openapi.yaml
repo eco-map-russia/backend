@@ -1105,6 +1105,62 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /air-historical:
+    get:
+      tags:
+        - EnvData
+      security:
+        - bearerAuth: [ ]
+      summary: Исторические данные качества воздуха
+      operationId: getHistoricalAirQualityData
+      parameters:
+        - name: lat
+          in: query
+          description: Широта
+          schema:
+            type: number
+            format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле широта обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -90, message = "Широта не может быть меньше -90")
+            @jakarta.validation.constraints.Max(value = 90, message = "Широта не может быть больше 90")
+        - name: lon
+          in: query
+          description: Долгота
+          schema:
+            type: number
+            format: double
+          x-field-extra-annotation: |
+            @jakarta.validation.constraints.NotNull(message = "Поле долгота обязательно для заполнения")
+            @jakarta.validation.constraints.Min(value = -180, message = "Долгота не может быть меньше -180")
+            @jakarta.validation.constraints.Max(value = 180, message = "Долгота не может быть больше 180")
+        - name: startDate
+          in: query
+          description: Начальная дата
+          schema:
+            type: string
+            format: date
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "Поле начальная дата обязательно для заполнения")'
+        - name: endDate
+          in: query
+          description: Конечная дата
+          schema:
+            type: string
+            format: date
+          x-field-extra-annotation: '@jakarta.validation.constraints.NotNull(message = "Поле конечная дата обязательно для заполнения")'
+      responses:
+        '200':
+          description: Исторические данные качества воздуха
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AirQualityHistoricalObservationDto'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
   /search:
     get:
       tags:
@@ -1375,26 +1431,37 @@ components:
           format: date-time
         pm10:
           type: number
+          format: double
         pm25:
           type: number
+          format: double
         carbonMonoxide:
           type: number
+          format: double
         carbonDioxide:
           type: number
+          format: double
         nitrogenDioxide:
           type: number
+          format: double
         sulphurDioxide:
           type: number
+          format: double
         ozone:
           type: number
+          format: double
         aerosolOpticalDepth:
           type: number
+          format: double
         dust:
           type: number
+          format: double
         methane:
           type: number
+          format: double
         europeanAqi:
           type: number
+          format: double
 
     AirQualityHistoricalObservationDto:
       type: object
@@ -1412,26 +1479,37 @@ components:
           format: date
         pm10:
           type: number
+          format: double
         pm25:
           type: number
+          format: double
         carbonMonoxide:
           type: number
+          format: double
         carbonDioxide:
           type: number
+          format: double
         nitrogenDioxide:
           type: number
+          format: double
         sulphurDioxide:
           type: number
+          format: double
         ozone:
           type: number
+          format: double
         aerosolOpticalDepth:
           type: number
+          format: double
         dust:
           type: number
+          format: double
         methane:
           type: number
+          format: double
         europeanAqi:
           type: number
+          format: double
 
     RadiationDataObservationDto:
       type: object
@@ -1566,26 +1644,37 @@ components:
           $ref: '#/components/schemas/CoordinatesResponseDto'
         pm25:
           type: number
+          format: double
         pm10:
           type: number
+          format: double
         carbonMonoxide:
           type: number
+          format: double
         carbonDioxide:
           type: number
+          format: double
         nitrogenDioxide:
           type: number
+          format: double
         sulphurDioxide:
           type: number
+          format: double
         ozone:
           type: number
+          format: double
         aerosolOpticalDepth:
           type: number
+          format: double
         dust:
           type: number
+          format: double
         methane:
           type: number
+          format: double
         europeanAqi:
           type: number
+          format: double
         time:
           type: string
           format: date-time

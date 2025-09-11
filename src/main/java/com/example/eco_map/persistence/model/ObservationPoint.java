@@ -28,7 +28,7 @@ import java.util.UUID;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = {"airQualityData", "radiationData"})
+@ToString(exclude = {"airQualityData", "radiationData", "city"})
 @Getter
 @Setter
 @Table(name = "observation_points")

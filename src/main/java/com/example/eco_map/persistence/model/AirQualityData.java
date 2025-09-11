@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedDate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.UUID;
@@ -33,15 +34,15 @@ import java.util.UUID;
                                               DATE(time) AS date,
                                               AVG(pm10) AS pm10,
                                               AVG(pm25) AS pm25,
-                                              AVG(carbon_monoxide) AS carbon_monoxide,
-                                              AVG(carbon_dioxide) AS carbon_dioxide,
-                                              AVG(nitrogen_dioxide) AS nitrogen_dioxide,
-                                              AVG(sulphur_dioxide) AS sulphur_dioxide,
-                                              AVG(ozone) AS ozone,
-                                              AVG(aerosol_optical_depth) AS aerosol_optical_depth,
-                                              AVG(dust) AS dust,
-                                              AVG(methane) AS methane,
-                                              AVG(european_aqi) AS european_aqi
+                                              AVG(carbon_monoxide) as carbonMonoxide ,
+                                              AVG(carbon_dioxide) as carbonDioxide,
+                                              AVG(nitrogen_dioxide) as nitrogenDioxide,
+                                              AVG(sulphur_dioxide) as sulphurDioxide,
+                                              AVG(ozone) as ozone,
+                                              AVG(aerosol_optical_depth) as aerosolOpticalDepth,
+                                              AVG(dust) as dust ,
+                                              AVG(methane) as methane ,
+                                              AVG(european_aqi) as europeanAqi
                                           FROM air_quality_data
                                           WHERE DATE(time) BETWEEN :start AND :end
                                             AND observation_point_id = :observationPointId
@@ -55,18 +56,18 @@ import java.util.UUID;
         classes = @ConstructorResult(
                 targetClass = AirQualityHistoricalResponseDto.class,
                 columns = {
-                        @ColumnResult(name = "date", type = java.time.LocalDate.class),
+                        @ColumnResult(name = "date", type = LocalDate.class),
                         @ColumnResult(name = "pm10", type = Double.class),
                         @ColumnResult(name = "pm25", type = Double.class),
-                        @ColumnResult(name = "carbon_monoxide", type = Double.class),
-                        @ColumnResult(name = "carbon_dioxide", type = Double.class),
-                        @ColumnResult(name = "nitrogen_dioxide", type = Double.class),
-                        @ColumnResult(name = "sulphur_dioxide", type = Double.class),
+                        @ColumnResult(name = "carbonMonoxide", type = Double.class),
+                        @ColumnResult(name = "carbonDioxide", type = Double.class),
+                        @ColumnResult(name = "nitrogenDioxide", type = Double.class),
+                        @ColumnResult(name = "sulphurDioxide", type = Double.class),
                         @ColumnResult(name = "ozone", type = Double.class),
-                        @ColumnResult(name = "aerosol_optical_depth", type = Double.class),
+                        @ColumnResult(name = "aerosolOpticalDepth", type = Double.class),
                         @ColumnResult(name = "dust", type = Double.class),
                         @ColumnResult(name = "methane", type = Double.class),
-                        @ColumnResult(name = "european_aqi", type = Double.class)
+                        @ColumnResult(name = "europeanAqi", type = Double.class)
                 }
         )
 )

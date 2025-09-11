@@ -6,6 +6,7 @@ import com.example.eco_map.usecases.CleanupService;
 import com.example.eco_map.usecases.ObservationPointService;
 import com.example.eco_map.usecases.RegionService;
 import com.example.eco_map.usecases.SearchService;
+import com.example.eco_map.usecases.dto.AirQualityHistoricalObservationDto;
 import com.example.eco_map.usecases.dto.AirQualityObservationDto;
 import com.example.eco_map.usecases.dto.CleanupEventDetailsDto;
 import com.example.eco_map.usecases.dto.LocationSearchDto;
@@ -23,6 +24,7 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.time.LocalDate;
 import java.util.UUID;
 
 @RestController
@@ -89,5 +91,15 @@ public class EnvDataController implements EnvDataApi {
             @PathVariable UUID id, ServerWebExchange exchange) {
         return cleanupService.getDetails(id)
                 .map(ResponseEntity::ok);
+    }
+
+    @GetMapping("/air-historical")
+    @Override
+    public Mono<ResponseEntity<Flux<AirQualityHistoricalObservationDto>>> getHistoricalAirQualityData(@RequestParam Double lat,
+                                                                                                      @RequestParam Double lon,
+                                                                                                      @RequestParam LocalDate startDate,
+                                                                                                      @RequestParam LocalDate endDate,
+                                                                                                      ServerWebExchange exchange) {
+        return Mono.defer(() -> Mono.just(ResponseEntity.ok(observationPointService.getHistoricalDataForObservationPoint(lat, lon, startDate, endDate))));
     }
 }
