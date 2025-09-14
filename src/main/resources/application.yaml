@@ -2,7 +2,7 @@ server:
   port: 8080
 app:
   data-init:
-    enabled: true
+    enabled: ${DATA_INIT_ENABLED}
 air:
   quality:
     batch-size: 3
