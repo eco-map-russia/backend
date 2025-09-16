@@ -58,8 +58,10 @@ public class PollutionSoilDataImporter extends AbstractCsvImporter<SoilData> {
             value = 6.0;
         } else if (rawValue.equals("3333")) {
             value = 12.0;
+        } else if (rawValue.equals("9999")) {
+            value = null;
         } else {
-            value = Double.parseDouble(line[VALUE_INDEX].replace(",", "."));
+            value = Double.parseDouble(rawValue.replace(",", "."));
         }
         SoilData data = new SoilData();
         data.setRegion(region);
