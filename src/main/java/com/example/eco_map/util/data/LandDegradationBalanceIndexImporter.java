@@ -63,9 +63,9 @@ public class LandDegradationBalanceIndexImporter extends AbstractCsvImporter<Soi
         Double value;
         String rawValue = line[VALUE_INDEX];
         if (rawValue.equals("9999")) {
-            value = 28.0;
+            value = null;
         } else {
-            value = Double.parseDouble(line[VALUE_INDEX].replace(",", "."));
+            value = Double.parseDouble(rawValue.replace(",", "."));
         }
         SoilData data = soilDataMap.get(regionName);
         if (data == null) {

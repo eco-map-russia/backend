@@ -53,8 +53,14 @@ public class WaterDataImporter extends AbstractCsvImporter<WaterData> {
             log.error("Region not found: {} ", regionName);
             throw new IllegalArgumentException("Region not found: " + regionName);
         }
+        String rawValue = line[VALUE_INDEX];
+        Double value = null;
+        if (rawValue.equals("9999")) {
+            value = null;
+        } else {
+            value = Double.parseDouble(rawValue.replace(",", "."));
+        }
 
-        Double value = Double.parseDouble(line[VALUE_INDEX].replace(",", "."));
 
         WaterData data = new WaterData();
         data.setRegion(region);
