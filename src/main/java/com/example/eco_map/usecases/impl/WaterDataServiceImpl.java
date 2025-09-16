@@ -3,6 +3,7 @@ package com.example.eco_map.usecases.impl;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.WaterDataNotFoundException;
 import com.example.eco_map.api.exception.WaterDataUpdateException;
+import com.example.eco_map.config.properties.GeoSimplifyProperties;
 import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.model.WaterData;
 import com.example.eco_map.persistence.repository.RegionRepository;
@@ -35,6 +36,7 @@ public class WaterDataServiceImpl implements WaterDataService {
     private final TransactionTemplate transactionTemplate;
     private final RegionRepository regionRepository;
     private final PageMapper pageMapper;
+    private final GeoSimplifyProperties geoSimplifyProperties;
 
     @Override
     public Mono<WaterData> getLatestByRegion(Region region) {
@@ -45,10 +47,9 @@ public class WaterDataServiceImpl implements WaterDataService {
 
     @Override
     public Flux<WaterMapDto> getAllWaterDataForMap() {
-        return Mono.fromCallable(() -> waterDataRepository.findLatestWaterDataWithRegion())
+        return Mono.fromCallable(() -> waterDataRepository.findLatestWaterDataWithRegion(geoSimplifyProperties.getWater()))
                 .flatMapMany(Flux::fromIterable)
-                .subscribeOn(jdbcScheduler)
-                .map(waterDataMapper::toMapDto);
+                .subscribeOn(jdbcScheduler);
     }
 
     @Override

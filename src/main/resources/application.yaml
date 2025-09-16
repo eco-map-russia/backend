@@ -3,6 +3,10 @@ server:
 app:
   data-init:
     enabled: ${DATA_INIT_ENABLED}
+  geo:
+    simplify:
+      soil: 0.07
+      water: 0.09
 air:
   quality:
     batch-size: 3

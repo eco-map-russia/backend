@@ -1614,8 +1614,10 @@ components:
           type: string
         chronicSoilPollutionPercent:
           type: number
+          format: double
         landDegradationNeutralityIndex:
           type: number
+          format: double
         geoJson:
           type: string
 
@@ -1629,6 +1631,7 @@ components:
           type: string
         dirtySurfaceWaterPercent:
           type: number
+          format: double
         geoJson:
           type: string
 
