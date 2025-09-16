@@ -3,6 +3,7 @@ package com.example.eco_map.usecases.impl;
 import com.example.eco_map.api.exception.RegionNotFoundException;
 import com.example.eco_map.api.exception.SoilDataNotFoundException;
 import com.example.eco_map.api.exception.SoilDataUpdateException;
+import com.example.eco_map.config.properties.GeoSimplifyProperties;
 import com.example.eco_map.persistence.model.Region;
 import com.example.eco_map.persistence.model.SoilData;
 import com.example.eco_map.persistence.repository.RegionRepository;
@@ -35,6 +36,7 @@ public class SoilDataServiceImpl implements SoilDataService {
     private final RegionRepository regionRepository;
     private final PageMapper pageMapper;
     private final TransactionTemplate transactionTemplate;
+    private final GeoSimplifyProperties simplifyProperties;
 
     @Override
     public Mono<SoilData> getLatestByRegion(Region region) {
@@ -45,10 +47,9 @@ public class SoilDataServiceImpl implements SoilDataService {
 
     @Override
     public Flux<SoilMapDto> getAllSoilDataForMap() {
-        return Mono.fromCallable(soilDataRepository::findLatestSoilDataWithRegion)
+        return Mono.fromCallable(() -> soilDataRepository.findLatestSoilDataWithRegion(simplifyProperties.getSoil()))
                 .flatMapMany(Flux::fromIterable)
-                .subscribeOn(jdbcScheduler)
-                .map(soilDataMapper::toMapDto);
+                .subscribeOn(jdbcScheduler);
     }
 
     @Override
