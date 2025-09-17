@@ -1,7 +1,6 @@
 package com.example.eco_map.usecases;
 
 import com.example.eco_map.usecases.dto.CleanupEventCreateRequestDto;
-import com.example.eco_map.usecases.dto.CleanupEventDetailsDto;
 import com.example.eco_map.usecases.dto.CleanupEventMapDto;
 import com.example.eco_map.usecases.dto.CleanupEventResponseDto;
 import com.example.eco_map.usecases.dto.CleanupEventUpdateDto;
@@ -14,8 +13,6 @@ import java.util.UUID;
 
 public interface CleanupService {
     Flux<CleanupEventMapDto> getAllCleanupEventsForMap();
-
-    Mono<CleanupEventDetailsDto> getDetails(UUID id);
 
     Mono<CleanupEventResponseDto> addCleanupEvent(CleanupEventCreateRequestDto dto);
 

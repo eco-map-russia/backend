@@ -7,8 +7,6 @@ import com.example.eco_map.persistence.repository.ObservationPointRepository;
 import com.example.eco_map.persistence.repository.RadiationDataRepository;
 import com.example.eco_map.util.GeometryUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;

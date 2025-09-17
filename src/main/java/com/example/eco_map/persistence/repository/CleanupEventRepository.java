@@ -1,8 +1,6 @@
 package com.example.eco_map.persistence.repository;
 
 import com.example.eco_map.persistence.model.CleanupEvent;
-import com.example.eco_map.persistence.model.NatureReserve;
-import com.example.eco_map.usecases.dto.CityDto;
 import com.example.eco_map.usecases.dto.CleanupEventMapPointDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
