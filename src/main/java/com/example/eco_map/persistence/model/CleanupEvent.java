@@ -33,6 +33,9 @@ import java.util.UUID;
                          c.name AS cityName,
                          ce.location AS location,
                          ce.event_date AS date,
+                         ce.organizer as organizer,
+                         ce.description as description,
+                         ce.participants_expected as participantsExpected,
                          ST_Y(c.center) AS lat,
                          ST_X(c.center) AS lon
                   FROM cleanup_events ce
@@ -50,6 +53,9 @@ import java.util.UUID;
                         @ColumnResult(name = "cityName", type = String.class),
                         @ColumnResult(name = "location", type = String.class),
                         @ColumnResult(name = "date", type = LocalDate.class),
+                        @ColumnResult(name = "organizer", type = String.class),
+                        @ColumnResult(name = "description", type = String.class),
+                        @ColumnResult(name = "participantsExpected", type = Integer.class),
                         @ColumnResult(name = "lat", type = Double.class),
                         @ColumnResult(name = "lon", type = Double.class)
                 }

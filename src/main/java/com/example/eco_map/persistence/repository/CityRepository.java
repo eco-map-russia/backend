@@ -2,7 +2,6 @@ package com.example.eco_map.persistence.repository;
 
 import com.example.eco_map.persistence.model.City;
 import com.example.eco_map.usecases.dto.CityDto;
-import com.example.eco_map.usecases.dto.RegionDto;
 import org.locationtech.jts.geom.Point;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

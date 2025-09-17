@@ -9,7 +9,6 @@ import com.example.eco_map.persistence.repository.CityRepository;
 import com.example.eco_map.persistence.repository.CleanupEventRepository;
 import com.example.eco_map.usecases.CleanupService;
 import com.example.eco_map.usecases.dto.CleanupEventCreateRequestDto;
-import com.example.eco_map.usecases.dto.CleanupEventDetailsDto;
 import com.example.eco_map.usecases.dto.CleanupEventMapDto;
 import com.example.eco_map.usecases.dto.CleanupEventResponseDto;
 import com.example.eco_map.usecases.dto.CleanupEventUpdateDto;
@@ -42,16 +41,6 @@ public class CleanupServiceImpl implements CleanupService {
         return Mono.fromCallable(cleanupEventRepository::findAllForMap)
                 .flatMapMany(Flux::fromIterable)
                 .subscribeOn(jdbcScheduler)
-                .map(cleanupEventMapper::toDto);
-    }
-
-    @Override
-    public Mono<CleanupEventDetailsDto> getDetails(UUID id) {
-        return Mono.fromCallable(() -> {
-                    CleanupEvent cleanupEvent = cleanupEventRepository.findById(id)
-                            .orElseThrow(() -> new CleanupEventNotFoundException("Cleanup event not found: " + id));
-                    return cleanupEvent;
-                })
                 .map(cleanupEventMapper::toDto);
     }
 

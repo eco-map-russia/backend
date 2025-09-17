@@ -2,7 +2,6 @@ package com.example.eco_map.usecases.mapper;
 
 import com.example.eco_map.persistence.model.CleanupEvent;
 import com.example.eco_map.usecases.dto.CleanupEventCreateRequestDto;
-import com.example.eco_map.usecases.dto.CleanupEventDetailsDto;
 import com.example.eco_map.usecases.dto.CleanupEventMapDto;
 import com.example.eco_map.usecases.dto.CleanupEventMapPointDto;
 import com.example.eco_map.usecases.dto.CleanupEventResponseDto;
@@ -15,8 +14,6 @@ public interface CleanupEventMapper {
     @Mapping(source = "lat", target = "coordinatesResponseDto.lat")
     @Mapping(source = "lon", target = "coordinatesResponseDto.lon")
     CleanupEventMapDto toDto(CleanupEventMapPointDto dto);
-
-    CleanupEventDetailsDto toDto(CleanupEvent event);
 
     CleanupEvent toEntity(CleanupEventCreateRequestDto requestDto);
 
