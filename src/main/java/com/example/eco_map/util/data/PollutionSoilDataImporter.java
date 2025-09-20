@@ -19,8 +19,8 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PollutionSoilDataImporter extends AbstractCsvImporter<SoilData> {
 
-    private static final Integer REGION_INDEX = 4;
-    private static final Integer VALUE_INDEX = 9;
+    private static final Integer REGION_INDEX = 5;
+    private static final Integer VALUE_INDEX = 10;
 
     private final RegionRepository regionRepository;
     private final SoilDataRepository soilDataRepository;
