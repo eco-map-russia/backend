@@ -16,6 +16,9 @@ import com.example.eco_map.usecases.mapper.WaterDataMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
+
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -30,23 +33,29 @@ public class RegionDetailsAggregatorImpl implements RegionDetailsAggregator {
 
     @Override
     public Mono<RegionDetailsDto> buildDetails(Region region) {
-        Mono<SoilRegionDetailsDto> soilDataMono = soilDataService.getLatestByRegion(region)
-                .map(soilDataMapper::toDto);
+        var soilDataMono = soilDataService.getLatestByRegion(region)
+                .map(optSoilData -> optSoilData.map(soilDataMapper::toDto));
 
-        Mono<WaterRegionDetailsDto> waterDataMono = waterDataService.getLatestByRegion(region)
-                .map(waterDataMapper::toDto);
+        var waterDataMono = waterDataService.getLatestByRegion(region)
+                .map(optWaterData -> optWaterData.map(waterDataMapper::toDto));
 
-        Mono<NatureReservesDto> natureReservesServiceMono = natureReservesService.getByRegion(region)
+        Mono<NatureReservesDto> natureReservesMono = natureReservesService.getByRegion(region)
                 .map(natureReservesMapper::toWrapperReservesDto);
 
-        return Mono.zip(soilDataMono, waterDataMono, natureReservesServiceMono)
-                .map(tuple -> new RegionDetailsDto()
-                        .regionId(region.getId())
-                        .name(region.getName())
-                        .center(regionMapper.toCoordinatesDto(region))
-                        .soilData(tuple.getT1())
-                        .waterData(tuple.getT2())
-                        .natureReserves(tuple.getT3())
-                );
+        return Mono.zip(soilDataMono, waterDataMono, natureReservesMono)
+                .map(tuple -> mapToRegionDetails(tuple, region));
+
+    }
+
+    private RegionDetailsDto mapToRegionDetails(
+            Tuple3<Optional<SoilRegionDetailsDto>, Optional<WaterRegionDetailsDto>, NatureReservesDto> tuple,
+            Region region) {
+        return new RegionDetailsDto()
+                .regionId(region.getId())
+                .name(region.getName())
+                .center(regionMapper.toCoordinatesDto(region))
+                .soilData(tuple.getT1().orElse(null))
+                .waterData(tuple.getT2().orElse(null))
+                .natureReserves(tuple.getT3());
     }
 }

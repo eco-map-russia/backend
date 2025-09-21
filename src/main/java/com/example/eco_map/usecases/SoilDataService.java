@@ -11,10 +11,11 @@ import org.springframework.data.domain.Pageable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Optional;
 import java.util.UUID;
 
 public interface SoilDataService {
-    Mono<SoilData> getLatestByRegion(Region region);
+    Mono<Optional<SoilData>> getLatestByRegion(Region region);
 
     Flux<SoilMapDto> getAllSoilDataForMap();
 

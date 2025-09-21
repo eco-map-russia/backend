@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,9 +40,8 @@ public class WaterDataServiceImpl implements WaterDataService {
     private final GeoSimplifyProperties geoSimplifyProperties;
 
     @Override
-    public Mono<WaterData> getLatestByRegion(Region region) {
+    public Mono<Optional<WaterData>> getLatestByRegion(Region region) {
         return Mono.fromCallable(() -> waterDataRepository.findFirstByRegionOrderByCreatedAt(region))
-                .flatMap(optional -> Mono.justOrEmpty(optional))
                 .subscribeOn(jdbcScheduler);
     }
 
