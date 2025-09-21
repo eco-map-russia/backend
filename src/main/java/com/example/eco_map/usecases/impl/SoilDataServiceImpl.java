@@ -25,6 +25,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,9 +40,8 @@ public class SoilDataServiceImpl implements SoilDataService {
     private final GeoSimplifyProperties simplifyProperties;
 
     @Override
-    public Mono<SoilData> getLatestByRegion(Region region) {
+    public Mono<Optional<SoilData>> getLatestByRegion(Region region) {
         return Mono.fromCallable(() -> soilDataRepository.findFirstByRegionOrderByCreatedAtDesc(region))
-                .flatMap(Mono::justOrEmpty)
                 .subscribeOn(jdbcScheduler);
     }
 
