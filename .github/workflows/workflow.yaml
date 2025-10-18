@@ -6,12 +6,12 @@ on:
       - main
 
 env:
-  MAJOR_VERSION: "1"
-  MINOR_VERSION: "0"
-  PATCH_VERSION: "0"
   IMAGE_NAME: ghcr.io/iraserg/eco-map-app
+  SHORT_SHA: ${{ github.sha }}
+  IMAGE_TAG: ghcr.io/iraserg/eco-map-app:${{ github.sha }}
 
 jobs:
+
   lint:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
@@ -34,7 +34,6 @@ jobs:
           name: hadolint-report
           path: hadolint-report.txt
 
-
   build:
     name: Build Docker image
     runs-on: ubuntu-latest
@@ -42,8 +41,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      image_tag: ${{ steps.version.outputs.image_tag }}
 
     steps:
       - name: Checkout repository
@@ -65,15 +62,6 @@ jobs:
       - name: Build project with Maven
         run: mvn clean package -DskipTests
 
-      - id: version
-        name: Set version and image tag
-        run: |
-          VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
-          IMAGE_TAG="${IMAGE_NAME}:${VERSION}"
-          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
-          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
-          echo "Version set to: ${IMAGE_TAG}"
-
       - name: Build Docker image
         run: |
           echo "Building image ${IMAGE_TAG}"
@@ -83,14 +71,15 @@ jobs:
             --load .
 
       - name: Save Docker image as artifact
-        run: docker save "${IMAGE_TAG}" | gzip > image.tar.gz
+        run: |
+          docker save "${IMAGE_TAG}" | gzip > image.tar.gz
+          echo "Image saved as artifact."
 
       - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker-image
           path: image.tar.gz
-
 
   push:
     name: Push Docker image to GHCR
@@ -99,8 +88,6 @@ jobs:
     permissions:
       contents: read
       packages: write
-    env:
-      IMAGE_TAG: ${{ needs.build.outputs.image_tag }}
 
     steps:
       - name: Download image artifact
@@ -109,10 +96,12 @@ jobs:
           name: docker-image
 
       - name: Load image from artifact
-        run: gunzip -c image.tar.gz | docker load
+        run: |
+          gunzip -c image.tar.gz | docker load
+          echo "Image loaded from artifact."
 
-      - name: Show image tag (debug)
-        run: echo "IMAGE_TAG=${IMAGE_TAG}"
+      - name: Image tag
+        run: echo "MAGE_TAG=${IMAGE_TAG}"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
@@ -122,10 +111,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker image
-        run: |
-          if [ -z "${IMAGE_TAG}" ]; then
-            echo "ERROR: IMAGE_TAG is empty!"
-            exit 1
-          fi
-          echo "Pushing image ${IMAGE_TAG}"
-          docker push "${IMAGE_TAG}"
+        run: docker push "${IMAGE_TAG}"
