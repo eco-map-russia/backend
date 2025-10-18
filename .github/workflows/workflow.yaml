@@ -15,6 +15,7 @@ jobs:
   lint:
     name: Lint Dockerfile
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -32,6 +33,7 @@ jobs:
         with:
           name: hadolint-report
           path: hadolint-report.txt
+
 
   build:
     name: Build Docker image
@@ -68,11 +70,13 @@ jobs:
         run: |
           VERSION="${MAJOR_VERSION}.${MINOR_VERSION}.${PATCH_VERSION}"
           IMAGE_TAG="${IMAGE_NAME}:${VERSION}"
-          echo "image_tag=${IMAGE_TAG}" >> "$GITHUB_OUTPUT"
-          echo "IMAGE_TAG=$IMAGE_TAG" >> "$GITHUB_ENV"
+          echo "image_tag=${IMAGE_TAG}" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=${IMAGE_TAG}" >> $GITHUB_ENV
+          echo "Version set to: ${IMAGE_TAG}"
 
       - name: Build Docker image
         run: |
+          echo "Building image ${IMAGE_TAG}"
           docker buildx build \
             --platform linux/amd64 \
             -t "${IMAGE_TAG}" \
@@ -107,8 +111,10 @@ jobs:
       - name: Load image from artifact
         run: gunzip -c image.tar.gz | docker load
 
+      - name: Show image tag (debug)
+        run: echo "IMAGE_TAG=${IMAGE_TAG}"
 
-      - name: Log in to GHCR
+      - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
@@ -116,4 +122,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Push Docker image
-        run: docker push "${IMAGE_TAG}"
+        run: |
+          if [ -z "${IMAGE_TAG}" ]; then
+            echo "ERROR: IMAGE_TAG is empty!"
+            exit 1
+          fi
+          echo "Pushing image ${IMAGE_TAG}"
+          docker push "${IMAGE_TAG}"
